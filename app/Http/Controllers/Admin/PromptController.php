@@ -18,7 +18,7 @@ class PromptController extends Controller
             $perPage = 50;
         }
 
-        $query = Prompt::query()->latest();
+        $query = Prompt::query()->orderBy('updated_at', 'desc');
 
         // Search Filter
         if ($request->filled('search')) {

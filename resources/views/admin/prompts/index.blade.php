@@ -175,6 +175,9 @@
                                     <div class="flex items-center gap-2 mt-1 flex-wrap">
                                         @php $catInfo = $prompt->getCategoryInfo(); @endphp
                                         <span class="text-[10px] text-gray-500 bg-gray-700/50 px-2 py-0.5 rounded">{{ $catInfo['icon'] }} {{ $catInfo['label'] }}</span>
+                                        <span class="text-[10px] text-gray-400 bg-gray-900/60 px-2 py-0.5 rounded border border-white/5" title="{{ $prompt->updated_at ? $prompt->updated_at->format('d/m/Y H:i') : '' }}">
+                                            🕒 {{ $prompt->updated_at ? $prompt->updated_at->diffForHumans() : 'N/A' }}
+                                        </span>
                                         @if($prompt->tags)
                                             @foreach(array_slice($prompt->getTagsArray(), 0, 4) as $tag)
                                                 <span class="text-[10px] text-pink-400/70 bg-pink-500/10 px-1.5 py-0.5 rounded">{{ $tag }}</span>
