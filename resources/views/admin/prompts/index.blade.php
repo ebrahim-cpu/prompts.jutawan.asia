@@ -54,15 +54,39 @@
                             @endforeach
                         </select>
 
-                        <!-- Tag Dropdown (ALL or Specific Tag) -->
-                        <select name="tag" onchange="this.form.submit()" class="rounded-xl bg-gray-900/50 border-gray-700 text-white px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 cursor-pointer">
-                            <option value="all" {{ request('tag', 'all') === 'all' ? 'selected' : '' }}>🏷️ Semua Tag (ALL)</option>
-                            @foreach($allTags as $tagName => $tagCount)
-                                <option value="{{ $tagName }}" {{ request('tag') === $tagName ? 'selected' : '' }}>
-                                    #{{ $tagName }} ({{ $tagCount }})
-                                </option>
-                            @endforeach
-                        </select>
+                        <!-- Tag Checkbox Selection Dropdown -->
+                        <div class="relative" x-data="{ openTags: false }">
+                            <button type="button" @click="openTags = !openTags" 
+                                    class="px-3.5 py-2.5 rounded-xl bg-gray-900/50 border border-gray-700 text-white text-sm focus:ring-2 focus:ring-purple-500 cursor-pointer flex items-center gap-2">
+                                <span>🏷️ Tag</span>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                                    {{ count($selectedTags) > 0 ? count($selectedTags) . ' dipilih' : 'Semua Tag' }}
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-gray-400 transition-transform" :class="openTags ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+
+                            <!-- Checkbox Dropdown Box -->
+                            <div x-show="openTags" x-cloak @click.away="openTags = false" x-transition 
+                                 class="absolute left-0 mt-2 w-72 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 z-50 space-y-3">
+                                <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                                    <span class="text-xs font-bold text-white">Pilih Tag (Checkbox):</span>
+                                    <button type="button" @click="openTags = false" class="text-xs text-gray-400 hover:text-white">✕</button>
+                                </div>
+
+                                <div class="max-h-60 overflow-y-auto space-y-1.5 custom-scrollbar pr-1">
+                                    @foreach($allTags as $tagName => $tagCount)
+                                        <label class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-white/5 cursor-pointer text-xs transition select-none">
+                                            <input type="checkbox" name="tags[]" value="{{ $tagName }}" 
+                                                   {{ in_array($tagName, $selectedTags) ? 'checked' : '' }}
+                                                   onchange="this.form.submit()"
+                                                   class="rounded border-gray-700 bg-gray-950 text-pink-500 shadow-sm focus:ring-pink-500">
+                                            <span class="text-gray-200 font-medium">{{ $tagName }}</span>
+                                            <span class="text-[10px] text-gray-500 ml-auto font-mono">({{ $tagCount }})</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Per Page Dropdown (50, 100, 150, 200, 300) -->
                         <select name="per_page" onchange="this.form.submit()" class="rounded-xl bg-gray-900/50 border-gray-700 text-white px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 cursor-pointer">
@@ -77,7 +101,7 @@
                             Tapis
                         </button>
 
-                        @if(request()->hasAny(['search', 'category', 'tag', 'per_page']))
+                        @if(request()->hasAny(['search', 'category', 'tag', 'tags', 'per_page']))
                             <a href="{{ route('admin.prompts.index') }}" class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition border border-white/10 rounded-xl hover:bg-white/5 text-center shrink-0">
                                 Reset
                             </a>

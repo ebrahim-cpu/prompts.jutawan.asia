@@ -35,10 +35,23 @@ class PromptController extends Controller
             $query->where('category', $request->category);
         }
 
-        // Tag Filter
-        if ($request->filled('tag') && $request->tag !== 'all') {
-            $tag = trim($request->tag);
-            $query->where('tags', 'like', "%{$tag}%");
+        // Tag Filter (Multiple Checkboxes Support)
+        $selectedTags = [];
+        if ($request->has('tags')) {
+            $rawTags = $request->input('tags');
+            if (is_array($rawTags)) {
+                $selectedTags = array_values(array_unique(array_filter(array_map(fn($t) => ltrim(trim($t), '#'), $rawTags))));
+            } elseif (is_string($rawTags) && $rawTags !== 'all' && trim($rawTags) !== '') {
+                $selectedTags = array_values(array_unique(array_filter(array_map(fn($t) => ltrim(trim($t), '#'), explode(',', $rawTags)))));
+            }
+        }
+
+        if (!empty($selectedTags)) {
+            $query->where(function ($q) use ($selectedTags) {
+                foreach ($selectedTags as $t) {
+                    $q->orWhere('tags', 'like', "%{$t}%");
+                }
+            });
         }
 
         $prompts = $query->paginate($perPage)->withQueryString();
@@ -62,7 +75,8 @@ class PromptController extends Controller
             'perPage',
             'allowedPerPage',
             'dbCategories',
-            'allTags'
+            'allTags',
+            'selectedTags'
         ));
     }
 
