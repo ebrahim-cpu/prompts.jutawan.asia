@@ -7,6 +7,7 @@ error_log
 ftp-config.json
 *.zip
 scratch/
+run_cleanup_visitor_logs.php
 .phpactor.json
 .phpunit.result.cache
 /.fleet

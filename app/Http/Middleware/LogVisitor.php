@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Models\VisitorLog;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class LogVisitor
 {
@@ -22,22 +23,22 @@ class LogVisitor
 
         try {
             // 1. Only record visitors who are NOT logged in (Guests only)
-            if (\Illuminate\Support\Facades\Auth::check()) {
+            if (Auth::check()) {
                 return $response;
             }
 
             // 2. Ignore static asset requests
-            $path = $request->path();
+            $path = trim($request->path(), '/');
             if (preg_match('/\.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$/i', $path)) {
                 return $response;
             }
 
-            // 3. Only record visits on the front page (muka hadapan: '/')
-            if (trim($path, '/') !== '' && !$request->routeIs('home')) {
+            // 3. Strictly ONLY record visits to the main home page ('/' or named route 'home')
+            if ($path !== '' && !$request->routeIs('home')) {
                 return $response;
             }
 
-            // Log guest visitor on front page
+            // Log guest visitor on front page only
             VisitorLog::create([
                 'ip_address' => $request->ip() ?? '127.0.0.1',
                 'user_agent' => substr($request->userAgent() ?? '', 0, 500),
@@ -53,3 +54,4 @@ class LogVisitor
         return $response;
     }
 }
+
