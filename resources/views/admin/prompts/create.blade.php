@@ -423,16 +423,31 @@
                             @error('images.*') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Is Premium -->
-                        <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-                            <label for="is_premium" class="flex items-center gap-3 cursor-pointer">
-                                <input id="is_premium" name="is_premium" type="checkbox" value="1" {{ old('is_premium') ? 'checked' : '' }}
-                                    class="h-5 w-5 rounded text-yellow-500 border-yellow-600 bg-gray-900 focus:ring-yellow-500 transition">
-                                <div>
-                                    <span class="font-bold text-yellow-300 text-sm">⭐ Tandakan sebagai Premium</span>
-                                    <p class="text-xs text-gray-400 mt-0.5">Hanya untuk pengguna bertier Premium sahaja. Pengguna Free akan nampak teks prompt dikaburkan.</p>
-                                </div>
-                            </label>
+                        <!-- Is Premium & Is Featured -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Is Premium -->
+                            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+                                <label for="is_premium" class="flex items-center gap-3 cursor-pointer">
+                                    <input id="is_premium" name="is_premium" type="checkbox" value="1" {{ old('is_premium') ? 'checked' : '' }}
+                                        class="h-5 w-5 rounded text-yellow-500 border-yellow-600 bg-gray-900 focus:ring-yellow-500 transition">
+                                    <div>
+                                        <span class="font-bold text-yellow-300 text-sm">⭐ Tandakan sebagai Premium</span>
+                                        <p class="text-xs text-gray-400 mt-0.5">Hanya untuk pengguna bertier Premium sahaja. Pengguna Free akan nampak teks prompt dikaburkan.</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Is Featured -->
+                            <div class="bg-pink-500/10 border border-pink-500/30 rounded-xl p-4">
+                                <label for="is_featured" class="flex items-center gap-3 cursor-pointer">
+                                    <input id="is_featured" name="is_featured" type="checkbox" value="1" {{ old('is_featured') ? 'checked' : '' }}
+                                        class="h-5 w-5 rounded text-pink-500 border-pink-600 bg-gray-900 focus:ring-pink-500 transition">
+                                    <div>
+                                        <span class="font-bold text-pink-300 text-sm">🔥 Featured (Paparkan di Home Page)</span>
+                                        <p class="text-xs text-gray-400 mt-0.5">Hanya prompt yang ditanda Featured akan dipaparkan di Home Page.</p>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
 

@@ -183,6 +183,7 @@ class PromptController extends Controller
             'prompt_text' => 'required|string',
             'images.*' => 'nullable|image|max:10240',
             'is_premium' => 'boolean',
+            'is_featured' => 'boolean',
             'category' => 'required|string|in:' . implode(',', array_keys(Prompt::categories())),
             'rating' => 'required|integer|min:1|max:5',
             'tags' => 'nullable|string|max:500',
@@ -190,6 +191,7 @@ class PromptController extends Controller
 
         $data = $request->except('images');
         $data['is_premium'] = $request->has('is_premium');
+        $data['is_featured'] = $request->has('is_featured');
 
         if (!empty($request->tags)) {
             $raw = explode(',', $request->tags);
@@ -241,6 +243,7 @@ class PromptController extends Controller
             'removed_images' => 'nullable|array',
             'removed_images.*' => 'string',
             'is_premium' => 'boolean',
+            'is_featured' => 'boolean',
             'category' => 'required|string|in:' . implode(',', array_keys(Prompt::categories())),
             'rating' => 'required|integer|min:1|max:5',
             'tags' => 'nullable|string|max:500',
@@ -248,6 +251,7 @@ class PromptController extends Controller
 
         $data = $request->except(['images', 'removed_images']);
         $data['is_premium'] = $request->has('is_premium');
+        $data['is_featured'] = $request->has('is_featured');
 
         if (!empty($request->tags)) {
             $raw = explode(',', $request->tags);

@@ -12,6 +12,7 @@ class Prompt extends Model
         'prompt_text',
         'images',
         'is_premium',
+        'is_featured',
         'category',
         'rating',
         'tags',
@@ -19,9 +20,27 @@ class Prompt extends Model
 
     protected $casts = [
         'is_premium' => 'boolean',
+        'is_featured' => 'boolean',
         'rating' => 'integer',
         'images' => 'array',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        self::ensureIsFeaturedColumnExists();
+    }
+
+    public static function ensureIsFeaturedColumnExists()
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('prompts', 'is_featured')) {
+                \Illuminate\Support\Facades\Schema::table('prompts', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->boolean('is_featured')->default(false);
+                });
+            }
+        } catch (\Throwable $e) {}
+    }
 
     /**
      * Get the first image url to display as a cover.

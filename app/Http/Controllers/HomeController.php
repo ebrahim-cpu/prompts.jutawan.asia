@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Prompt::query();
+        $query = Prompt::query()->where('is_featured', true);
 
         // Search
         if ($request->filled('search')) {
@@ -49,10 +49,10 @@ class HomeController extends Controller
 
         $prompts = $query->latest()->paginate(12)->withQueryString();
 
-        // Stats
-        $totalPrompts = Prompt::count();
-        $freePrompts = Prompt::where('is_premium', false)->count();
-        $premiumPrompts = Prompt::where('is_premium', true)->count();
+        // Stats (For Featured prompts on Home Page)
+        $totalPrompts = Prompt::where('is_featured', true)->count();
+        $freePrompts = Prompt::where('is_featured', true)->where('is_premium', false)->count();
+        $premiumPrompts = Prompt::where('is_featured', true)->where('is_premium', true)->count();
 
         // Visitor Counter Stats
         $totalVisitors = \App\Models\VisitorLog::count();

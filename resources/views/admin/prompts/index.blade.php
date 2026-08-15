@@ -165,6 +165,9 @@
                                     <div class="flex-grow min-w-0">
                                         <div class="flex items-center gap-2 mb-1 flex-wrap">
                                             <h4 class="font-bold text-white truncate">{{ $prompt->title }}</h4>
+                                            @if($prompt->is_featured)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30">🔥 Featured</span>
+                                            @endif
                                             @if($prompt->is_premium)
                                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-400">⭐ Premium</span>
                                             @else
