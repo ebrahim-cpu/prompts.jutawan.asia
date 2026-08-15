@@ -5,20 +5,14 @@
                 <h2 class="text-2xl font-bold text-white">Urus Semua Prompt</h2>
                 <p class="text-sm text-gray-400 mt-1">Tambah, edit atau buang prompt AI dari koleksi anda.</p>
             </div>
-            <div class="flex items-center gap-3">
-                <button type="button" @click="$dispatch('open-export-modal')" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-emerald-400 border border-emerald-500/30 text-sm font-bold rounded-xl transition shadow-lg shadow-emerald-500/10 cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>📥 Export Data</span>
-                </button>
-                <a href="{{ route('admin.prompts.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-lg shadow-purple-500/20">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Tambah Prompt Baru
-                </a>
-            </div>
+            <a href="{{ route('admin.prompts.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-lg shadow-purple-500/20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Tambah Prompt Baru
+            </a>
         </div>
     </x-slot>
 
-    <div class="py-8" x-data="{ showExportModal: false, exportScope: '{{ request()->hasAny(['search', 'category', 'tag', 'tags']) ? 'filtered' : 'all' }}', exportFormat: 'excel' }" @open-export-modal.window="showExportModal = true">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
                 <!-- Stats -->
@@ -233,25 +227,40 @@
             </div>
         </div>
 
-        <!-- EXPORT MODAL POP-UP -->
-        <template x-teleport="body">
-            <div x-show="showExportModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4">
-                <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" @click="showExportModal = false"></div>
-                <div class="relative z-10 w-full max-w-lg bg-gray-900 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-5">
-                    
-                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-white">Export Data Prompt</h3>
-                                <p class="text-xs text-gray-400">Pilih format fail dan skop rekod yang ingin dieksport.</p>
-                            </div>
+            <!-- COLLAPSIBLE EXPORT CONTROL AT FOOTER -->
+            <div x-data="{ isExportOpen: false, exportScope: '{{ request()->hasAny(['search', 'category', 'tag', 'tags']) ? 'filtered' : 'all' }}', exportFormat: 'excel' }" 
+                 class="mt-8 border border-white/10 rounded-2xl bg-gray-900/60 overflow-hidden shadow-xl transition-all">
+                
+                <!-- Clickable Header Bar to Expand/Collapse -->
+                <div @click="isExportOpen = !isExportOpen" 
+                     class="px-6 py-4 bg-gray-900/90 border-b border-white/5 flex items-center justify-between flex-wrap gap-3 cursor-pointer select-none hover:bg-gray-800/80 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold shrink-0">
+                            📥
                         </div>
-                        <button type="button" @click="showExportModal = false" class="text-gray-400 hover:text-white transition">✕</button>
+                        <div>
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                Eksport Data Prompt (Export to EXCEL / PDF)
+                                <span class="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
+                                      x-text="isExportOpen ? 'Kuncup Panel ▲' : 'Buka Panel ▼'"></span>
+                            </h3>
+                            <p class="text-[11px] text-gray-400 mt-0.5">Muat turun rekod prompt dalam format Excel/CSV atau PDF Document.</p>
+                        </div>
                     </div>
 
+                    <div class="flex items-center gap-2">
+                        <button type="button" 
+                                class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                            <span>📥 Panel Export</span>
+                            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="isExportOpen ? 'rotate-180' : 'rotate-0'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Collapsible Content Area -->
+                <div x-show="isExportOpen" x-transition.duration.200ms class="p-6 space-y-6">
                     <form action="{{ route('admin.prompts.export') }}" method="GET" :target="exportFormat === 'pdf' ? '_blank' : '_self'" class="space-y-5">
                         
                         <!-- Forward current filter parameters for filtered export -->
@@ -263,82 +272,78 @@
                             @endforeach
                         @endif
 
-                        <!-- Format Selection -->
-                        <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">1. Format Fail Export</label>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition select-none"
-                                       :class="exportFormat === 'excel' ? 'bg-emerald-500/10 border-emerald-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
-                                    <input type="radio" name="format" value="excel" x-model="exportFormat" class="text-emerald-500 focus:ring-emerald-500">
-                                    <div>
-                                        <div class="text-sm font-bold flex items-center gap-1.5">
-                                            <span>📊 Excel / CSV</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Format Selection -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2.5">1. Format Fail Export</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition select-none"
+                                           :class="exportFormat === 'excel' ? 'bg-emerald-500/10 border-emerald-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
+                                        <input type="radio" name="format" value="excel" x-model="exportFormat" class="text-emerald-500 focus:ring-emerald-500">
+                                        <div>
+                                            <div class="text-xs font-bold">📊 Excel / CSV</div>
+                                            <div class="text-[10px] text-gray-400">Fail .csv (MS Excel)</div>
                                         </div>
-                                        <div class="text-[11px] text-gray-400">Excel, CSV (.csv)</div>
-                                    </div>
-                                </label>
+                                    </label>
 
-                                <label class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition select-none"
-                                       :class="exportFormat === 'pdf' ? 'bg-red-500/10 border-red-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
-                                    <input type="radio" name="format" value="pdf" x-model="exportFormat" class="text-red-500 focus:ring-red-500">
-                                    <div>
-                                        <div class="text-sm font-bold flex items-center gap-1.5">
-                                            <span>📄 PDF Document</span>
+                                    <label class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition select-none"
+                                           :class="exportFormat === 'pdf' ? 'bg-red-500/10 border-red-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
+                                        <input type="radio" name="format" value="pdf" x-model="exportFormat" class="text-red-500 focus:ring-red-500">
+                                        <div>
+                                            <div class="text-xs font-bold">📄 PDF Document</div>
+                                            <div class="text-[10px] text-gray-400">PDF Report (.pdf)</div>
                                         </div>
-                                        <div class="text-[11px] text-gray-400">PDF Report (.pdf)</div>
-                                    </div>
-                                </label>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Scope Selection -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2.5">2. Skop Rekod Export</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition select-none"
+                                           :class="exportScope === 'filtered' ? 'bg-purple-500/10 border-purple-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
+                                        <input type="radio" name="scope" value="filtered" x-model="exportScope" class="text-purple-500 focus:ring-purple-500">
+                                        <div class="flex-grow flex items-center justify-between">
+                                            <div>
+                                                <div class="text-xs font-bold">🔍 Rekod Ditapis Sahaja (Filter Export)</div>
+                                                <div class="text-[10px] text-gray-400">Prompt mengikut penapis/carian semasa</div>
+                                            </div>
+                                            <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold font-mono">
+                                                {{ $prompts->total() }} rekod
+                                            </span>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition select-none"
+                                           :class="exportScope === 'all' ? 'bg-purple-500/10 border-purple-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
+                                        <input type="radio" name="scope" value="all" x-model="exportScope" class="text-purple-500 focus:ring-purple-500">
+                                        <div class="flex-grow flex items-center justify-between">
+                                            <div>
+                                                <div class="text-xs font-bold">🌐 Semua Rekod (Export All)</div>
+                                                <div class="text-[10px] text-gray-400">Seluruh pangkalan data prompt</div>
+                                            </div>
+                                            <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-gray-300 border border-white/10 text-xs font-bold font-mono">
+                                                {{ $totalPrompts }} rekod
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Scope Selection -->
-                        <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">2. Skop Rekod Export</label>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition select-none"
-                                       :class="exportScope === 'filtered' ? 'bg-purple-500/10 border-purple-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
-                                    <input type="radio" name="scope" value="filtered" x-model="exportScope" class="text-purple-500 focus:ring-purple-500">
-                                    <div class="flex-grow flex items-center justify-between">
-                                        <div>
-                                            <div class="text-xs font-bold">🔍 Rekod Ditapis Sahaja (Filter Export)</div>
-                                            <div class="text-[11px] text-gray-400">Eksport prompt mengikut carian & penapis semasa</div>
-                                        </div>
-                                        <span class="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold font-mono">
-                                            {{ $prompts->total() }} rekod
-                                        </span>
-                                    </div>
-                                </label>
-
-                                <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition select-none"
-                                       :class="exportScope === 'all' ? 'bg-purple-500/10 border-purple-500 text-white' : 'bg-gray-800/50 border-white/10 text-gray-400 hover:bg-white/5'">
-                                    <input type="radio" name="scope" value="all" x-model="exportScope" class="text-purple-500 focus:ring-purple-500">
-                                    <div class="flex-grow flex items-center justify-between">
-                                        <div>
-                                            <div class="text-xs font-bold">🌐 Semua Rekod (Export All)</div>
-                                            <div class="text-[11px] text-gray-400">Eksport keseluruhan pangkalan data prompt</div>
-                                        </div>
-                                        <span class="px-2.5 py-1 rounded-full bg-white/10 text-gray-300 border border-white/10 text-xs font-bold font-mono">
-                                            {{ $totalPrompts }} rekod
-                                        </span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Footer Actions -->
-                        <div class="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
-                            <button type="button" @click="showExportModal = false" class="px-4 py-2 text-sm text-gray-400 hover:text-white">
-                                Batal
-                            </button>
-                            <button type="submit" @click="setTimeout(() => showExportModal = false, 500)"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm rounded-xl hover:opacity-90 transition shadow-lg shadow-emerald-500/20 cursor-pointer">
+                        <!-- Action Button -->
+                        <div class="flex items-center justify-end pt-3 border-t border-white/5">
+                            <button type="submit"
+                                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition cursor-pointer">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                <span>Muat Turun Fail</span>
+                                <span>Jana & Muat Turun Fail Export</span>
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-        </template>
+
+        </div>
     </div>
 </x-app-layout>
