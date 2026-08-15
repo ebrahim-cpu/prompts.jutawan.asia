@@ -1,26 +1,25 @@
 <x-app-layout>
-    <div x-data="{ showExportModal: false, exportScope: '{{ request()->hasAny(['search', 'category', 'tag', 'tags']) ? 'filtered' : 'all' }}', exportFormat: 'excel' }">
-        <x-slot name="header">
-            <div class="flex items-center justify-between flex-wrap gap-3">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Urus Semua Prompt</h2>
-                    <p class="text-sm text-gray-400 mt-1">Tambah, edit atau buang prompt AI dari koleksi anda.</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button type="button" @click="showExportModal = true" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-emerald-400 border border-emerald-500/30 text-sm font-bold rounded-xl transition shadow-lg shadow-emerald-500/10 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span>📥 Export Data</span>
-                    </button>
-                    <a href="{{ route('admin.prompts.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-lg shadow-purple-500/20">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Prompt Baru
-                    </a>
-                </div>
+    <x-slot name="header">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Urus Semua Prompt</h2>
+                <p class="text-sm text-gray-400 mt-1">Tambah, edit atau buang prompt AI dari koleksi anda.</p>
             </div>
-        </x-slot>
+            <div class="flex items-center gap-3">
+                <button type="button" @click="$dispatch('open-export-modal')" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-emerald-400 border border-emerald-500/30 text-sm font-bold rounded-xl transition shadow-lg shadow-emerald-500/10 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>📥 Export Data</span>
+                </button>
+                <a href="{{ route('admin.prompts.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-lg shadow-purple-500/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah Prompt Baru
+                </a>
+            </div>
+        </div>
+    </x-slot>
 
-        <div class="py-8">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-8" x-data="{ showExportModal: false, exportScope: '{{ request()->hasAny(['search', 'category', 'tag', 'tags']) ? 'filtered' : 'all' }}', exportFormat: 'excel' }" @open-export-modal.window="showExportModal = true">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
                 <!-- Stats -->
                 <div class="grid grid-cols-3 gap-4 mb-6">
