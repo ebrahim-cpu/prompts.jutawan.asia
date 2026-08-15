@@ -14,7 +14,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::latest()->paginate(20);
+        $tags = Tag::orderBy('name', 'asc')->paginate(50);
         $totalTags = Tag::count();
         return view('admin.tags.index', compact('tags', 'totalTags'));
     }
