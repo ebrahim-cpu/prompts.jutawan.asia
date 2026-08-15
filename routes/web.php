@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
 // Admin Routes
 Route::middleware(['auth', App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('prompts/export', [PromptController::class, 'export'])->name('prompts.export');
     Route::resource('prompts', PromptController::class);
     Route::resource('categories', CategoryController::class)->except(['create', 'show', 'edit']);
     Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);

@@ -81,6 +81,95 @@ class PromptController extends Controller
         ));
     }
 
+    public function export(Request $request)
+    {
+        $scope = $request->input('scope', 'all'); // 'all' or 'filtered'
+        $format = strtolower($request->input('format', 'excel')); // 'excel', 'pdf'
+
+        $query = Prompt::query()->orderBy('updated_at', 'desc');
+
+        if ($scope === 'filtered') {
+            if ($request->filled('search')) {
+                $search = trim($request->input('search'));
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('prompt_text', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('category') && $request->category !== 'all') {
+                $query->where('category', $request->category);
+            }
+
+            $selectedTags = [];
+            if ($request->has('tags')) {
+                $rawTags = $request->input('tags');
+                if (is_array($rawTags)) {
+                    $selectedTags = array_values(array_unique(array_filter(array_map(fn($t) => ltrim(trim($t), '#'), $rawTags))));
+                } elseif (is_string($rawTags) && $rawTags !== 'all' && trim($rawTags) !== '') {
+                    $selectedTags = array_values(array_unique(array_filter(array_map(fn($t) => ltrim(trim($t), '#'), explode(',', $rawTags)))));
+                }
+            }
+
+            if (!empty($selectedTags)) {
+                $query->where(function ($q) use ($selectedTags) {
+                    foreach ($selectedTags as $t) {
+                        $q->orWhere('tags', 'like', "%{$t}%");
+                    }
+                });
+            }
+        }
+
+        $prompts = $query->get();
+        $filename = "prompts_export_" . date('Ymd_His');
+
+        if ($format === 'pdf') {
+            return view('admin.prompts.export_pdf', compact('prompts', 'scope', 'filename'));
+        }
+
+        // CSV / Excel Export
+        return response()->stream(function() use ($prompts) {
+            $handle = fopen('php://output', 'w');
+            fputs($handle, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
+
+            fputcsv($handle, [
+                'ID',
+                'Tajuk Prompt',
+                'Kategori',
+                'Teks Prompt Sebenar',
+                'Penerangan',
+                'Tag',
+                'Rating',
+                'Akses',
+                'Tarikh Dicipta',
+                'Tarikh Dikemaskini'
+            ]);
+
+            foreach ($prompts as $p) {
+                $catInfo = $p->getCategoryInfo();
+                fputcsv($handle, [
+                    $p->id,
+                    $p->title,
+                    $catInfo['label'] ?? $p->category,
+                    $p->prompt_text,
+                    $p->description ?? '',
+                    implode(', ', $p->getTagsArray()),
+                    $p->rating ?? 3,
+                    $p->is_premium ? 'Premium' : 'Free',
+                    $p->created_at ? $p->created_at->format('Y-m-d H:i:s') : '',
+                    $p->updated_at ? $p->updated_at->format('Y-m-d H:i:s') : '',
+                ]);
+            }
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}.csv\"",
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Pragma' => 'public',
+        ]);
+    }
+
     public function create()
     {
         return view('admin.prompts.create');
