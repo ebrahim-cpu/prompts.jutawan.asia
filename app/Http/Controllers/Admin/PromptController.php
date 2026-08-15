@@ -9,13 +9,61 @@ use Illuminate\Support\Facades\File;
 
 class PromptController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $prompts = Prompt::latest()->paginate(10);
+        $allowedPerPage = [50, 100, 150, 200, 300];
+        $perPage = (int) $request->input('per_page', 50);
+
+        if (!in_array($perPage, $allowedPerPage)) {
+            $perPage = 50;
+        }
+
+        $query = Prompt::query()->latest();
+
+        // Search Filter
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('prompt_text', 'like', "%{$search}%");
+            });
+        }
+
+        // Category Filter
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        // Tag Filter
+        if ($request->filled('tag') && $request->tag !== 'all') {
+            $tag = trim($request->tag);
+            $query->where('tags', 'like', "%{$tag}%");
+        }
+
+        $prompts = $query->paginate($perPage)->withQueryString();
+
+        // Stats
         $totalPrompts = Prompt::count();
         $freePrompts = Prompt::where('is_premium', false)->count();
         $premiumPrompts = Prompt::where('is_premium', true)->count();
-        return view('admin.prompts.index', compact('prompts', 'totalPrompts', 'freePrompts', 'premiumPrompts'));
+
+        // Categories list for filter
+        $dbCategories = \App\Models\Category::all();
+
+        // All tags list for filter
+        $allTags = Prompt::allTags();
+
+        return view('admin.prompts.index', compact(
+            'prompts',
+            'totalPrompts',
+            'freePrompts',
+            'premiumPrompts',
+            'perPage',
+            'allowedPerPage',
+            'dbCategories',
+            'allTags'
+        ));
     }
 
     public function create()

@@ -31,6 +31,61 @@
                 </div>
             </div>
 
+            <!-- Filter & Search Bar (Category, Tag, Search, and Pagination Options) -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 p-5 mb-6">
+                <form method="GET" action="{{ route('admin.prompts.index') }}" class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+                    
+                    <!-- Search Input -->
+                    <div class="relative flex-grow">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari tajuk, penerangan, atau teks prompt..."
+                            class="w-full rounded-xl bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 pl-11 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+                    </div>
+
+                    <!-- Category, Tag & Paging Controls -->
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                        <!-- Category Dropdown (ALL or Specific Category) -->
+                        <select name="category" onchange="this.form.submit()" class="rounded-xl bg-gray-900/50 border-gray-700 text-white px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 cursor-pointer">
+                            <option value="all" {{ request('category', 'all') === 'all' ? 'selected' : '' }}>📁 Semua Kategori (ALL)</option>
+                            @foreach($dbCategories as $cat)
+                                <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>
+                                    {{ $cat->icon ?: '🎨' }} {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <!-- Tag Dropdown (ALL or Specific Tag) -->
+                        <select name="tag" onchange="this.form.submit()" class="rounded-xl bg-gray-900/50 border-gray-700 text-white px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 cursor-pointer">
+                            <option value="all" {{ request('tag', 'all') === 'all' ? 'selected' : '' }}>🏷️ Semua Tag (ALL)</option>
+                            @foreach($allTags as $tagName => $tagCount)
+                                <option value="{{ $tagName }}" {{ request('tag') === $tagName ? 'selected' : '' }}>
+                                    #{{ $tagName }} ({{ $tagCount }})
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <!-- Per Page Dropdown (50, 100, 150, 200, 300) -->
+                        <select name="per_page" onchange="this.form.submit()" class="rounded-xl bg-gray-900/50 border-gray-700 text-white px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 cursor-pointer">
+                            @foreach($allowedPerPage as $option)
+                                <option value="{{ $option }}" {{ $perPage == $option ? 'selected' : '' }}>
+                                    {{ $option }} Rekod / Halaman
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl hover:opacity-90 transition shrink-0">
+                            Tapis
+                        </button>
+
+                        @if(request()->hasAny(['search', 'category', 'tag', 'per_page']))
+                            <a href="{{ route('admin.prompts.index') }}" class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition border border-white/10 rounded-xl hover:bg-white/5 text-center shrink-0">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
             @if(session('success'))
                 <div class="mb-6 flex items-center gap-3 bg-green-500/10 border border-green-500/30 text-green-400 px-5 py-4 rounded-xl" role="alert" x-data="{ show: true }" x-show="show" x-transition>
                     <svg class="w-5 h-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
