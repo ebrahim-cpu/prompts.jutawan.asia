@@ -314,4 +314,26 @@ class PromptController extends Controller
         
         return redirect()->route('admin.prompts.index')->with('success', 'Prompt berjaya dipadam!');
     }
+
+    public function toggleStatus(Request $request, Prompt $prompt)
+    {
+        if ($request->has('is_premium')) {
+            $prompt->is_premium = (bool)$request->input('is_premium');
+        }
+        if ($request->has('is_featured')) {
+            $prompt->is_featured = (bool)$request->input('is_featured');
+        }
+        $prompt->save();
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status prompt berjaya dikemaskini!',
+                'is_premium' => (bool)$prompt->is_premium,
+                'is_featured' => (bool)$prompt->is_featured,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status prompt berjaya dikemaskini!');
+    }
 }

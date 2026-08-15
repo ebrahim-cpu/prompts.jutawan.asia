@@ -141,9 +141,43 @@
                 @else
                     <div class="space-y-4">
                         @foreach($prompts as $prompt)
-                            <div x-data="{ copied: false, copyPrompt() { navigator.clipboard.writeText({{ json_encode($prompt->prompt_text) }}); this.copied = true; setTimeout(() => this.copied = false, 2500); } }" 
+                            <div x-data="{ 
+                                    copied: false,
+                                    isPremium: {{ $prompt->is_premium ? 'true' : 'false' }},
+                                    isFeatured: {{ $prompt->is_featured ? 'true' : 'false' }},
+                                    updating: false,
+                                    copyPrompt() { 
+                                        navigator.clipboard.writeText({{ json_encode($prompt->prompt_text) }}); 
+                                        this.copied = true; 
+                                        setTimeout(() => this.copied = false, 2500); 
+                                    },
+                                    async toggleField(field, checked) {
+                                        this.updating = true;
+                                        let formData = new FormData();
+                                        formData.append('_token', '{{ csrf_token() }}');
+                                        formData.append('_method', 'PATCH');
+                                        formData.append(field, checked ? '1' : '0');
+
+                                        try {
+                                            let res = await fetch('{{ route('admin.prompts.toggle_status', $prompt->id) }}', {
+                                                method: 'POST',
+                                                headers: { 'Accept': 'application/json' },
+                                                body: formData
+                                            });
+                                            let data = await res.json();
+                                            if (data.success) {
+                                                this.isPremium = data.is_premium;
+                                                this.isFeatured = data.is_featured;
+                                            }
+                                        } catch(e) {
+                                            console.error(e);
+                                        } finally {
+                                            this.updating = false;
+                                        }
+                                    }
+                                 }" 
                                  class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition p-5">
-                                <div class="flex items-center gap-5">
+                                <div class="flex items-center gap-5 flex-wrap md:flex-nowrap">
                                     <!-- Image Preview -->
                                     <div class="shrink-0">
                                         @php $firstImg = $prompt->getFirstImageUrl(); $imgCount = count($prompt->images ?? []); @endphp
@@ -165,14 +199,17 @@
                                     <div class="flex-grow min-w-0">
                                         <div class="flex items-center gap-2 mb-1 flex-wrap">
                                             <h4 class="font-bold text-white truncate">{{ $prompt->title }}</h4>
-                                            @if($prompt->is_featured)
+                                            
+                                            <!-- Dynamic Badges -->
+                                            <template x-if="isFeatured">
                                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30">🔥 Featured</span>
-                                            @endif
-                                            @if($prompt->is_premium)
+                                            </template>
+                                            <template x-if="isPremium">
                                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-400">⭐ Premium</span>
-                                            @else
+                                            </template>
+                                            <template x-if="!isPremium">
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500/20 text-green-400">Free</span>
-                                            @endif
+                                            </template>
                                             <span class="text-xs text-yellow-400">@for($i = 0; $i < ($prompt->rating ?? 3); $i++)★@endfor</span>
                                         </div>
                                         <p class="text-sm text-gray-400 truncate">{{ $prompt->description ?? 'Tiada penerangan' }}</p>
@@ -190,8 +227,31 @@
                                         </div>
                                     </div>
 
-                                    <!-- Actions -->
-                                    <div class="shrink-0 flex items-center gap-2">
+                                    <!-- Quick Checkbox Controls & Actions -->
+                                    <div class="shrink-0 flex items-center gap-3 flex-wrap">
+                                        <!-- Quick Checkbox Toggle Panel -->
+                                        <div class="flex items-center gap-3 bg-gray-900/80 border border-white/10 px-3 py-2 rounded-xl" :class="updating ? 'opacity-50 pointer-events-none' : ''">
+                                            <!-- Premium Checkbox -->
+                                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs" title="Tukar status Premium">
+                                                <input type="checkbox" 
+                                                       x-model="isPremium"
+                                                       @change="toggleField('is_premium', $event.target.checked)"
+                                                       class="w-4 h-4 rounded border-gray-700 bg-gray-950 text-yellow-500 focus:ring-yellow-500 cursor-pointer">
+                                                <span class="font-bold transition-colors" :class="isPremium ? 'text-yellow-400' : 'text-gray-400'">⭐ Premium</span>
+                                            </label>
+
+                                            <span class="text-gray-700">|</span>
+
+                                            <!-- Featured Checkbox -->
+                                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs" title="Tukar paparan Home Page (Featured)">
+                                                <input type="checkbox" 
+                                                       x-model="isFeatured"
+                                                       @change="toggleField('is_featured', $event.target.checked)"
+                                                       class="w-4 h-4 rounded border-gray-700 bg-gray-950 text-pink-500 focus:ring-pink-500 cursor-pointer">
+                                                <span class="font-bold transition-colors" :class="isFeatured ? 'text-pink-400' : 'text-gray-400'">🔥 Featured</span>
+                                            </label>
+                                        </div>
+
                                         <button type="button" 
                                                 @click="copyPrompt()" 
                                                 class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-xl transition cursor-pointer border"
