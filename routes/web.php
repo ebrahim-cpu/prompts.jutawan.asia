@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PromptController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VisitorLogController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\UserAccessLogController;
@@ -51,6 +52,11 @@ Route::middleware(['auth', App\Http\Middleware\AdminMiddleware::class])->prefix(
     // Visitor Logs
     Route::get('visitors', [VisitorLogController::class, 'index'])->name('visitors.index');
     Route::delete('visitors/clear', [VisitorLogController::class, 'clear'])->name('visitors.clear');
+
+    // Interactive Reports
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/data', [ReportController::class, 'apiData'])->name('reports.data');
+    Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
 });
 
 require __DIR__.'/auth.php';

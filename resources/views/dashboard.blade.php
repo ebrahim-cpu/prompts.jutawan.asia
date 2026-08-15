@@ -188,13 +188,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-purple-500/40 hover:border-purple-400 hover:bg-purple-500/10 transition group shadow-lg shadow-purple-500/5">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition text-xl">
+                            📊
+                        </div>
+                        <div>
+                            <div class="font-bold text-white group-hover:text-purple-300 transition">Laporan Interactive</div>
+                            <div class="text-xs text-purple-400 font-medium">Pelawat, Logins & Prompts</div>
+                        </div>
+                    </a>
                     <a href="{{ route('admin.prompts.create') }}" class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-green-500/30 hover:border-green-400 hover:bg-green-500/5 transition group">
                         <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center group-hover:bg-green-500/30 transition">
                             <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         </div>
                         <div>
-                            <div class="font-bold text-white group-hover:text-green-400 transition">Tambah Prompt Baru</div>
+                            <div class="font-bold text-white group-hover:text-green-400 transition">Tambah Prompt</div>
                             <div class="text-xs text-gray-500">Cipta prompt AI baharu</div>
                         </div>
                     </a>
@@ -204,16 +213,16 @@
                         </div>
                         <div>
                             <div class="font-bold text-white group-hover:text-indigo-400 transition">Senarai Prompts</div>
-                            <div class="text-xs text-gray-500">Edit & buang prompt sedia ada</div>
+                            <div class="text-xs text-gray-500">Edit & buang prompt</div>
                         </div>
                     </a>
-                    <a href="{{ route('admin.prompts.index') }}" class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/5 transition group">
-                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition">
-                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-pink-500/30 hover:border-pink-400 hover:bg-pink-500/5 transition group">
+                        <div class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center group-hover:bg-pink-500/30 transition">
+                            <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                         </div>
                         <div>
-                            <div class="font-bold text-white group-hover:text-purple-400 transition">Kemaskini Prompt</div>
-                            <div class="text-xs text-gray-500">Pilih dari senarai untuk diedit</div>
+                            <div class="font-bold text-white group-hover:text-pink-400 transition">Kategori & Tag</div>
+                            <div class="text-xs text-gray-500">Urus kategori prompt</div>
                         </div>
                     </a>
                     <a href="{{ route('admin.users.index') }}" class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/5 transition group">
@@ -222,7 +231,7 @@
                         </div>
                         <div>
                             <div class="font-bold text-white group-hover:text-cyan-400 transition">Urus Pengguna</div>
-                            <div class="text-xs text-gray-500">Lihat, edit role & tier pengguna</div>
+                            <div class="text-xs text-gray-500">Lihat, edit role & tier</div>
                         </div>
                     </a>
                 </div>
