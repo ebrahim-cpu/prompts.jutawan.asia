@@ -43,7 +43,7 @@
                                 </a>
                             </div>
                             <select name="category" id="category" class="block w-full rounded-xl bg-gray-900/50 border-gray-700 text-white px-4 py-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition cursor-pointer">
-                                @foreach(\App\Models\Category::all() as $cat)
+                                @foreach(\App\Models\Category::orderBy('name', 'asc')->get() as $cat)
                                     <option value="{{ $cat->slug }}" {{ old('category', 'general') === $cat->slug ? 'selected' : '' }}>
                                         {{ $cat->icon ?: '🎨' }} {{ $cat->name }}
                                     </option>
@@ -87,6 +87,8 @@
                                 fn($t) => ltrim(trim($t), '#'), 
                                 array_merge($dbTagNames, $allUsedTags, $selectedTags)
                             ))));
+                            natcasesort($mergedAvailable);
+                            $mergedAvailable = array_values($mergedAvailable);
                         @endphp
                         <!-- Collapsible Tag Control Block -->
                         <div x-data="{
@@ -101,6 +103,7 @@
                                         this.availableTags.push(clean);
                                     }
                                 });
+                                this.availableTags.sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
                             },
                             hasTag(tagName) {
                                 let clean = tagName.trim().replace(/^#/, '').toLowerCase();
@@ -121,6 +124,7 @@
                                     if (!this.availableTags.some(a => a.toLowerCase() === tag.toLowerCase())) {
                                         this.availableTags.push(tag);
                                     }
+                                    this.availableTags.sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
                                 }
                                 this.customTag = '';
                             },

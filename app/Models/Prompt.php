@@ -40,7 +40,7 @@ class Prompt extends Model
     public static function categories(): array
     {
         try {
-            $dbCats = \App\Models\Category::all();
+            $dbCats = \App\Models\Category::orderBy('name', 'asc')->get();
             if ($dbCats->count() > 0) {
                 $cats = [];
                 foreach ($dbCats as $c) {
@@ -56,7 +56,7 @@ class Prompt extends Model
             // Fallback if table not ready
         }
 
-        return [
+        $fallback = [
             'general'      => ['label' => 'Umum',          'icon' => '🎨', 'color' => 'gray'],
             'portrait'     => ['label' => 'Potret',        'icon' => '🧑', 'color' => 'pink'],
             'landscape'    => ['label' => 'Landskap',      'icon' => '🏔️', 'color' => 'green'],
@@ -70,6 +70,12 @@ class Prompt extends Model
             'nature'       => ['label' => 'Alam Semula Jadi', 'icon' => '🌿', 'color' => 'emerald'],
             'logo'         => ['label' => 'Logo & Ikon',   'icon' => '✏️', 'color' => 'rose'],
         ];
+
+        uasort($fallback, function($a, $b) {
+            return strnatcasecmp($a['label'], $b['label']);
+        });
+
+        return $fallback;
     }
 
     /**
