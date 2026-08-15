@@ -9,8 +9,10 @@
         @media print {
             .no-print { display: none !important; }
             body { background: #fff !important; color: #000 !important; }
-            .print-table th { background-color: #f3f4f6 !important; color: #111827 !important; }
+            .print-table th { background-color: #f3f4f6 !important; color: #111827 !important; border-bottom: 2px solid #000 !important; }
+            .print-table td { border-bottom: 1px solid #e5e7eb !important; color: #111827 !important; }
             .print-card { border: 1px solid #e5e7eb !important; background: #fff !important; color: #111827 !important; }
+            img { max-width: 100% !important; print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
         }
     </style>
 </head>
@@ -60,37 +62,31 @@
                 <thead>
                     <tr class="bg-gray-800 text-gray-300 uppercase font-bold border-b border-gray-700">
                         <th class="p-3 w-10 text-center">#</th>
-                        <th class="p-3">Tajuk Prompt</th>
-                        <th class="p-3 w-28">Kategori</th>
-                        <th class="p-3 w-20 text-center">Akses</th>
-                        <th class="p-3 w-20 text-center">Rating</th>
-                        <th class="p-3 w-36">Tag</th>
+                        <th class="p-3 w-20 text-center">Gambar</th>
+                        <th class="p-3 w-48">Tajuk Prompt</th>
                         <th class="p-3">Teks Prompt Sebenar</th>
-                        <th class="p-3 w-28 text-right">Dikemaskini</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-800 text-gray-300">
                     @forelse($prompts as $index => $p)
-                        @php $catInfo = $p->getCategoryInfo(); @endphp
+                        @php $firstImg = $p->getFirstImageUrl(); @endphp
                         <tr class="hover:bg-gray-800/40 transition">
-                            <td class="p-3 text-center font-mono text-gray-400">{{ $index + 1 }}</td>
-                            <td class="p-3 font-bold text-white">{{ $p->title }}</td>
-                            <td class="p-3">{{ $catInfo['icon'] ?? '' }} {{ $catInfo['label'] ?? $p->category }}</td>
-                            <td class="p-3 text-center font-bold">
-                                @if($p->is_premium)
-                                    <span class="text-yellow-400">⭐ Premium</span>
+                            <td class="p-3 text-center font-mono text-gray-400 align-top">{{ $index + 1 }}</td>
+                            <td class="p-3 text-center align-top">
+                                @if($firstImg)
+                                    <img src="{{ $firstImg }}" alt="{{ $p->title }}" class="w-16 h-16 object-cover rounded-lg border border-white/10 mx-auto shadow-sm">
                                 @else
-                                    <span class="text-green-400">Free</span>
+                                    <div class="w-12 h-12 bg-gray-800/60 rounded-lg flex items-center justify-center text-gray-500 mx-auto text-[10px]">
+                                        Tiada
+                                    </div>
                                 @endif
                             </td>
-                            <td class="p-3 text-center text-yellow-400">@for($i = 0; $i < ($p->rating ?? 3); $i++)★@endfor</td>
-                            <td class="p-3 text-pink-300 font-mono">{{ implode(', ', $p->getTagsArray()) }}</td>
-                            <td class="p-3 font-mono text-[11px] leading-snug whitespace-pre-wrap max-w-xs">{{ $p->prompt_text }}</td>
-                            <td class="p-3 text-right font-mono text-gray-400">{{ $p->updated_at ? $p->updated_at->format('d/m/Y') : '' }}</td>
+                            <td class="p-3 font-bold text-white align-top">{{ $p->title }}</td>
+                            <td class="p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap align-top">{{ $p->prompt_text }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="p-8 text-center text-gray-500">Tiada prompt ditemui dalam skop ini.</td>
+                            <td colspan="4" class="p-8 text-center text-gray-500">Tiada prompt ditemui dalam skop ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
