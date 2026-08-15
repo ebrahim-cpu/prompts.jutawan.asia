@@ -149,17 +149,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Links & Collapse Button -->
+                                <!-- Action Links -->
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.tags.index') }}" target="_blank" class="px-3 py-1.5 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/30 text-xs font-bold transition flex items-center gap-1">
                                         ⚙️ Urus Tag
                                     </a>
-                                    
-                                    <button type="button" 
-                                            @click="isCollapsed = !isCollapsed" 
-                                            class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 text-xs transition cursor-pointer"
-                                            x-text="isCollapsed ? 'Buka Panel ▼' : 'Kuncup ▲'">
-                                    </button>
                                 </div>
                             </div>
 
@@ -168,22 +162,6 @@
 
                             <!-- Collapsible Content Area -->
                             <div x-show="!isCollapsed" x-transition.duration.200ms class="p-5 space-y-4">
-                                <!-- ACTIVE / SELECTED TAGS PREVIEW BADGES -->
-                                <div>
-                                    <span class="block text-xs font-semibold text-gray-400 mb-2">Tag Dipilih (<span x-text="selectedTags.length"></span>):</span>
-                                    <div class="flex flex-wrap gap-2 min-h-[38px] p-2.5 rounded-xl bg-gray-950/60 border border-white/10 items-center">
-                                        <template x-if="selectedTags.length === 0">
-                                            <span class="text-xs text-gray-500 italic">Tiada tag dipilih. Klik mana-mana tag di bawah atau tambah tag baru.</span>
-                                        </template>
-                                        <template x-for="tag in selectedTags" :key="tag">
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono font-bold bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-md shadow-pink-500/20 border border-pink-400">
-                                                <span x-text="tag"></span>
-                                                <button type="button" @click="removeTag(tag)" class="hover:text-red-300 ml-1 font-bold text-xs" title="Buang Tag">✕</button>
-                                            </span>
-                                        </template>
-                                    </div>
-                                </div>
-
                                 <!-- AVAILABLE TAG CHIPS / PILLS -->
                                 <div>
                                     <span class="block text-xs font-semibold text-gray-400 mb-2">Senarai Tag Sedia Ada:</span>
@@ -221,11 +199,12 @@
                         </div>
                         @error('tags') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
 
-                        <!-- Collapsible Prompt Text Block with Trim Button -->
+                        <!-- Collapsible Prompt Text Block with Trim & Copy Buttons -->
                         <div x-data="{ 
                             isCollapsed: true, 
                             promptText: {{ json_encode(old('prompt_text', $prompt->prompt_text ?? '')) }},
                             isTrimmed: false,
+                            copied: false,
                             trimPrompt() {
                                 if (!this.promptText) return;
                                 let cleaned = this.promptText
@@ -235,6 +214,12 @@
                                 this.promptText = cleaned;
                                 this.isTrimmed = true;
                                 setTimeout(() => this.isTrimmed = false, 2500);
+                            },
+                            copyPrompt() {
+                                if (!this.promptText) return;
+                                navigator.clipboard.writeText(this.promptText);
+                                this.copied = true;
+                                setTimeout(() => this.copied = false, 2500);
                             }
                         }" class="border border-white/10 rounded-2xl bg-gray-900/40 overflow-hidden shadow-lg transition-all">
 
@@ -256,20 +241,26 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons (Trim & Collapse) -->
+                                <!-- Action Buttons (Copy & Trim) -->
                                 <div class="flex items-center gap-2">
+                                    <button type="button" 
+                                            @click="copyPrompt()" 
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95 cursor-pointer border"
+                                            :class="copied ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border-pink-500/30'"
+                                            title="Salin teks prompt ke clipboard">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path x-show="!copied" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                            <path x-show="copied" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        <span x-text="copied ? '✓ Disalin!' : '📋 Salin Prompt'"></span>
+                                    </button>
+
                                     <button type="button" 
                                             @click="trimPrompt()" 
                                             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
                                             title="Buang ruang kosong berlebihan dan kemaskan format teks">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 0L4 4m5.121 5.121L4 14.121"/></svg>
                                         <span>✂️ Trim Prompt</span>
-                                    </button>
-                                    
-                                    <button type="button" 
-                                            @click="isCollapsed = !isCollapsed" 
-                                            class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 text-xs transition cursor-pointer"
-                                            x-text="isCollapsed ? 'Buka Panel ▼' : 'Kuncup ▲'">
                                     </button>
                                 </div>
                             </div>
@@ -295,9 +286,18 @@
                                     <span class="text-[10px] text-green-300 font-mono">Ruang kosong berlebihan dibuang</span>
                                 </div>
 
+                                <!-- Feedback Toast when Copied -->
+                                <div x-show="copied" x-cloak x-transition class="p-2.5 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-300 text-xs flex items-center justify-between">
+                                    <span class="flex items-center gap-1.5 font-semibold">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        Teks prompt berjaya disalin ke clipboard!
+                                    </span>
+                                    <span class="text-[10px] text-pink-200 font-mono">Sedia untuk ditampal</span>
+                                </div>
+
                                 <p class="text-[11px] text-gray-500 flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5 text-purple-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    Klik <strong>"✂️ Trim Prompt"</strong> di atas untuk membuang spacing berlebihan dan menjadikan teks lebih kemas secara automatik.
+                                    Klik <strong>"📋 Salin Prompt"</strong> untuk menyalin teks atau <strong>"✂️ Trim Prompt"</strong> untuk membuang spacing/enter berlebihan.
                                 </p>
                             </div>
                         </div>
