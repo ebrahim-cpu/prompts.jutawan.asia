@@ -32,7 +32,7 @@
             </div>
 
             <!-- Filter & Search Bar (Category, Tag, Search, and Pagination Options) -->
-            <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 p-5 mb-6">
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 p-5 mb-6 relative z-30">
                 <form method="GET" action="{{ route('admin.prompts.index') }}" class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
                     
                     <!-- Search Input -->
@@ -67,7 +67,7 @@
 
                             <!-- Checkbox Dropdown Box -->
                             <div x-show="openTags" x-cloak @click.away="openTags = false" x-transition 
-                                 class="absolute left-0 mt-2 w-72 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 z-50 space-y-3">
+                                 class="absolute left-0 mt-2 w-72 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 z-[100] space-y-3">
                                 <div class="flex items-center justify-between border-b border-white/10 pb-2">
                                     <span class="text-xs font-bold text-white">Pilih Tag (Checkbox):</span>
                                     <button type="button" @click="openTags = false" class="text-xs text-gray-400 hover:text-white">✕</button>
