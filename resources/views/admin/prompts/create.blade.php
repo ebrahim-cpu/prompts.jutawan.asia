@@ -227,10 +227,8 @@
                             trimPrompt() {
                                 if (!this.promptText) return;
                                 let cleaned = this.promptText
-                                    .split('\n')
-                                    .map(line => line.trim().replace(/[ \t]+/g, ' '))
-                                    .filter((line, idx, arr) => line.length > 0 || (idx > 0 && arr[idx - 1].length > 0))
-                                    .join('\n')
+                                    .replace(/[\r\n]+/g, ' ')
+                                    .replace(/\s+/g, ' ')
                                     .trim();
                                 this.promptText = cleaned;
                                 this.isTrimmed = true;
