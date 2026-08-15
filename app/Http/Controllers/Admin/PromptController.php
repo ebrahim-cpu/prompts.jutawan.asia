@@ -64,8 +64,9 @@ class PromptController extends Controller
         // Categories list for filter
         $dbCategories = \App\Models\Category::all();
 
-        // All tags list for filter
+        // All tags list for filter (sorted alphabetically ascending A-Z)
         $allTags = Prompt::allTags();
+        ksort($allTags, SORT_NATURAL | SORT_FLAG_CASE);
 
         return view('admin.prompts.index', compact(
             'prompts',

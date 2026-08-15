@@ -33,7 +33,7 @@
 
             <!-- Filter & Search Bar (Category, Tag, Search, and Pagination Options) -->
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 p-5 mb-6 relative z-30">
-                <form method="GET" action="{{ route('admin.prompts.index') }}" class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+                <form method="GET" action="{{ route('admin.prompts.index') }}" id="adminPromptFilterForm" class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
                     
                     <!-- Search Input -->
                     <div class="relative flex-grow">
@@ -69,8 +69,16 @@
                             <div x-show="openTags" x-cloak @click.away="openTags = false" x-transition 
                                  class="absolute left-0 mt-2 w-72 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 z-[100] space-y-3">
                                 <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                                    <span class="text-xs font-bold text-white">Pilih Tag (Checkbox):</span>
-                                    <button type="button" @click="openTags = false" class="text-xs text-gray-400 hover:text-white">✕</button>
+                                    <span class="text-xs font-bold text-white">Pilih Tag (A-Z):</span>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" 
+                                                @click="document.querySelectorAll('input[name=\'tags[]\']').forEach(cb => cb.checked = false); document.getElementById('adminPromptFilterForm').submit();" 
+                                                class="text-[11px] text-pink-400 hover:text-pink-300 font-bold hover:underline cursor-pointer flex items-center gap-1">
+                                            <span>Untick All</span>
+                                        </button>
+                                        <span class="text-gray-600">|</span>
+                                        <button type="button" @click="openTags = false" class="text-xs text-gray-400 hover:text-white">✕</button>
+                                    </div>
                                 </div>
 
                                 <div class="max-h-60 overflow-y-auto space-y-1.5 custom-scrollbar pr-1">

@@ -118,7 +118,7 @@ class Prompt extends Model
                 }
             }
         }
-        arsort($tags);
+        ksort($tags, SORT_NATURAL | SORT_FLAG_CASE);
         return $tags;
     }
 }
