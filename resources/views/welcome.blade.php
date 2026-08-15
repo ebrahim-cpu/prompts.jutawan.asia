@@ -173,9 +173,11 @@
                                     </button>
                                 </form>
                             @else
-                                <a href="{{ route('login') }}" class="text-sm font-medium text-gray-300 hover:text-white transition px-4 py-2 rounded-lg hover:bg-white/10">Log Masuk</a>
+                                <a href="{{ route('auth.google') }}" class="text-sm font-medium text-gray-300 hover:text-white transition px-4 py-2 rounded-lg hover:bg-white/10">Log Masuk</a>
                                 @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="text-sm font-medium bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-2.5 rounded-lg hover:opacity-90 transition text-white shadow-lg shadow-purple-500/30">Daftar Akaun</a>
+                                    <a href="{{ route('auth.google') }}" class="text-sm font-medium bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-2.5 rounded-lg hover:opacity-90 transition text-white shadow-lg shadow-purple-500/30 flex items-center gap-2">
+                                        <span>Log Masuk / Daftar (Google)</span>
+                                    </a>
                                 @endif
                             @endauth
                         @endif
@@ -201,9 +203,9 @@
                                 <button type="submit" class="w-full text-left text-sm font-medium text-red-400 px-3 py-2 rounded-lg hover:bg-red-500/10 transition">🚪 Log Keluar</button>
                             </form>
                         @else
-                            <a href="{{ route('login') }}" class="block text-sm font-medium text-gray-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition">🔑 Log Masuk</a>
+                            <a href="{{ route('auth.google') }}" class="block text-sm font-medium text-gray-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition">🔑 Log Masuk (Google)</a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="block text-sm font-medium text-pink-400 px-3 py-2 rounded-lg hover:bg-pink-500/10 transition">✨ Daftar Akaun</a>
+                                <a href="{{ route('auth.google') }}" class="block text-sm font-medium text-pink-400 px-3 py-2 rounded-lg hover:bg-pink-500/10 transition">✨ Daftar dengan Google</a>
                             @endif
                         @endauth
                     @endif
