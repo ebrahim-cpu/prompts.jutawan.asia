@@ -191,27 +191,19 @@
                                  }" 
                                  class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition p-5 space-y-3">
                                 <div class="flex items-center gap-5 flex-wrap md:flex-nowrap">
-                                    <!-- Numbered Circles for Photos (On-Demand Loading) -->
-                                    <div class="shrink-0 flex items-center gap-2">
-                                        @php $promptImages = array_values(array_filter($prompt->images ?? [])); @endphp
-                                        @if(!empty($promptImages))
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Foto</span>
-                                                <div class="flex items-center gap-1.5 flex-wrap">
-                                                    @foreach($promptImages as $index => $imgUrl)
-                                                        <button type="button" 
-                                                                @click="togglePhoto({{ json_encode($imgUrl) }}, {{ $index + 1 }})"
-                                                                class="w-7 h-7 rounded-full text-xs font-extrabold transition-all duration-200 flex items-center justify-center border cursor-pointer select-none"
-                                                                :class="activeImage === {{ json_encode($imgUrl) }} ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-500/40 ring-2 ring-purple-400/50 scale-110' : 'bg-gray-900 text-purple-300 border-purple-500/30 hover:bg-purple-500/20 hover:scale-105'"
-                                                                title="Klik untuk muat paparan foto #{{ $index + 1 }}">
-                                                            {{ $index + 1 }}
-                                                        </button>
-                                                    @endforeach
-                                                </div>
+                                    <!-- Image Thumbnail -->
+                                    <div class="shrink-0">
+                                        @php $firstImg = $prompt->getFirstImageUrl(); $imgCount = count($prompt->images ?? []); @endphp
+                                        @if($firstImg)
+                                            <div class="relative">
+                                                <img src="{{ $firstImg }}" alt="{{ $prompt->title }}" class="w-20 h-20 object-cover rounded-xl ring-2 ring-white/10">
+                                                @if($imgCount > 1)
+                                                    <span class="absolute -top-1.5 -right-1.5 bg-purple-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-gray-800">{{ $imgCount }}</span>
+                                                @endif
                                             </div>
                                         @else
-                                            <div class="w-12 h-12 bg-gray-900/60 rounded-xl flex items-center justify-center border border-white/5" title="Tiada Foto">
-                                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl flex items-center justify-center ring-2 ring-white/10">
+                                                <svg class="w-8 h-8 text-indigo-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             </div>
                                         @endif
                                     </div>
@@ -244,6 +236,23 @@
                                                 @foreach(array_slice($prompt->getTagsArray(), 0, 4) as $tag)
                                                     <span class="text-[10px] text-pink-400/70 bg-pink-500/10 px-1.5 py-0.5 rounded">{{ $tag }}</span>
                                                 @endforeach
+                                            @endif
+
+                                            <!-- Numbered Circles for Photos (Appears after tags) -->
+                                            @php $promptImages = array_values(array_filter($prompt->images ?? [])); @endphp
+                                            @if(!empty($promptImages))
+                                                <div class="flex items-center gap-1.5 ml-1 pl-2 border-l border-white/10">
+                                                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Foto:</span>
+                                                    @foreach($promptImages as $index => $imgUrl)
+                                                        <button type="button" 
+                                                                @click="togglePhoto({{ json_encode($imgUrl) }}, {{ $index + 1 }})"
+                                                                class="w-5 h-5 rounded-full text-[10px] font-extrabold transition-all duration-200 flex items-center justify-center border cursor-pointer select-none"
+                                                                :class="activeImage === {{ json_encode($imgUrl) }} ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-500/40 ring-2 ring-purple-400/50 scale-110' : 'bg-gray-900 text-purple-300 border-purple-500/30 hover:bg-purple-500/20 hover:scale-105'"
+                                                                title="Klik untuk lihat paparan foto #{{ $index + 1 }}">
+                                                            {{ $index + 1 }}
+                                                        </button>
+                                                    @endforeach
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
