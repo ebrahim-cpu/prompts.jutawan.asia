@@ -146,6 +146,19 @@
                                     isPremium: {{ $prompt->is_premium ? 'true' : 'false' }},
                                     isFeatured: {{ $prompt->is_featured ? 'true' : 'false' }},
                                     updating: false,
+                                    showPromptText: false,
+                                    activeImage: null,
+                                    activeImageIndex: null,
+                                    images: @js($prompt->images ?? []),
+                                    togglePhoto(url, idx) {
+                                        if (this.activeImage === url) {
+                                            this.activeImage = null;
+                                            this.activeImageIndex = null;
+                                        } else {
+                                            this.activeImage = url;
+                                            this.activeImageIndex = idx;
+                                        }
+                                    },
                                     copyPrompt() { 
                                         navigator.clipboard.writeText({{ json_encode($prompt->prompt_text) }}); 
                                         this.copied = true; 
@@ -176,21 +189,29 @@
                                         }
                                     }
                                  }" 
-                                 class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition p-5">
+                                 class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition p-5 space-y-3">
                                 <div class="flex items-center gap-5 flex-wrap md:flex-nowrap">
-                                    <!-- Image Preview -->
-                                    <div class="shrink-0">
-                                        @php $firstImg = $prompt->getFirstImageUrl(); $imgCount = count($prompt->images ?? []); @endphp
-                                        @if($firstImg)
-                                            <div class="relative">
-                                                <img src="{{ $firstImg }}" alt="{{ $prompt->title }}" class="w-20 h-20 object-cover rounded-xl ring-2 ring-white/10">
-                                                @if($imgCount > 1)
-                                                    <span class="absolute -top-1.5 -right-1.5 bg-purple-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-gray-800">{{ $imgCount }}</span>
-                                                @endif
+                                    <!-- Numbered Circles for Photos (On-Demand Loading) -->
+                                    <div class="shrink-0 flex items-center gap-2">
+                                        @php $promptImages = array_values(array_filter($prompt->images ?? [])); @endphp
+                                        @if(!empty($promptImages))
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Foto</span>
+                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                    @foreach($promptImages as $index => $imgUrl)
+                                                        <button type="button" 
+                                                                @click="togglePhoto({{ json_encode($imgUrl) }}, {{ $index + 1 }})"
+                                                                class="w-7 h-7 rounded-full text-xs font-extrabold transition-all duration-200 flex items-center justify-center border cursor-pointer select-none"
+                                                                :class="activeImage === {{ json_encode($imgUrl) }} ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-500/40 ring-2 ring-purple-400/50 scale-110' : 'bg-gray-900 text-purple-300 border-purple-500/30 hover:bg-purple-500/20 hover:scale-105'"
+                                                                title="Klik untuk muat paparan foto #{{ $index + 1 }}">
+                                                            {{ $index + 1 }}
+                                                        </button>
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         @else
-                                            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl flex items-center justify-center ring-2 ring-white/10">
-                                                <svg class="w-8 h-8 text-indigo-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <div class="w-12 h-12 bg-gray-900/60 rounded-xl flex items-center justify-center border border-white/5" title="Tiada Foto">
+                                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             </div>
                                         @endif
                                     </div>
@@ -265,7 +286,7 @@
                                         </button>
 
                                         <a href="{{ route('admin.prompts.edit', $prompt->id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-500/10 text-indigo-400 text-sm font-medium rounded-xl hover:bg-indigo-500/20 transition border border-indigo-500/20">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 01-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.prompts.destroy', $prompt->id) }}" method="POST" class="inline-block" onsubmit="return confirmDelete(this, 'Adakah anda pasti mahu memadam prompt ini?');">
@@ -276,6 +297,42 @@
                                                 Padam
                                             </button>
                                         </form>
+                                    </div>
+                                </div>
+
+                                <!-- On-Demand Photo Display Box -->
+                                <div x-show="activeImage" x-cloak x-transition.duration.200ms class="p-3 bg-gray-900/90 border border-purple-500/30 rounded-2xl relative flex flex-col items-center justify-center">
+                                    <div class="w-full flex items-center justify-between mb-2 px-2">
+                                        <span class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+                                            🖼️ Paparan Foto #<span x-text="activeImageIndex"></span> dari {{ count($promptImages) }} (On-Demand)
+                                        </span>
+                                        <button type="button" @click="activeImage = null; activeImageIndex = null" class="text-xs text-gray-400 hover:text-white bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-lg transition cursor-pointer">
+                                            ✕ Tutup Foto
+                                        </button>
+                                    </div>
+                                    <img :src="activeImage" alt="On demand photo preview" class="max-h-96 w-auto object-contain rounded-xl ring-1 ring-white/10 shadow-2xl">
+                                </div>
+
+                                <!-- Collapsible Full Text Prompt Control -->
+                                <div class="pt-2 border-t border-white/5">
+                                    <button type="button" 
+                                            @click="showPromptText = !showPromptText" 
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-900/80 hover:bg-gray-900 text-xs font-bold text-purple-300 border border-purple-500/30 hover:border-purple-500/50 transition cursor-pointer select-none">
+                                        <span>📄 Teks Prompt Penuh</span>
+                                        <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="showPromptText ? 'rotate-180 text-purple-400' : 'rotate-0 text-gray-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Collapsible Full Text Content Area -->
+                                    <div x-show="showPromptText" x-cloak x-transition.duration.200ms class="mt-2 p-4 bg-gray-950/90 border border-purple-500/30 rounded-2xl space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[11px] font-bold uppercase tracking-wider text-purple-400">Teks Prompt Penuh:</span>
+                                            <button type="button" @click="copyPrompt()" class="text-xs text-pink-400 hover:text-pink-300 font-bold flex items-center gap-1 cursor-pointer">
+                                                <span x-text="copied ? '✅ Disalin ke Clipboard!' : '📋 Salin Teks'"></span>
+                                            </button>
+                                        </div>
+                                        <pre class="text-xs text-gray-200 font-mono whitespace-pre-wrap leading-relaxed select-all bg-gray-900/80 p-3 rounded-xl border border-white/5 max-h-80 overflow-y-auto custom-scrollbar">{{ $prompt->prompt_text }}</pre>
                                     </div>
                                 </div>
                             </div>
