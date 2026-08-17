@@ -146,6 +146,8 @@ class ReportController extends Controller
             $query = Prompt::whereYear('created_at', $year);
         }
 
+        $countExpr = ($type === 'visitors') ? 'COUNT(DISTINCT ip_address)' : 'COUNT(*)';
+
         if ($period === 'daily') {
             // Group by date YYYY-MM-DD
             $driver = DB::getDriverName();
@@ -156,7 +158,7 @@ class ReportController extends Controller
             }
 
             $rawResults = (clone $query)
-                ->select(DB::raw("{$dateFormat} as date_label"), DB::raw('COUNT(*) as total'))
+                ->select(DB::raw("{$dateFormat} as date_label"), DB::raw("{$countExpr} as total"))
                 ->groupBy('date_label')
                 ->orderBy('date_label', 'asc')
                 ->pluck('total', 'date_label')
@@ -182,7 +184,7 @@ class ReportController extends Controller
             }
 
             $rawResults = (clone $query)
-                ->select(DB::raw("{$weekExpr} as week_num"), DB::raw('COUNT(*) as total'))
+                ->select(DB::raw("{$weekExpr} as week_num"), DB::raw("{$countExpr} as total"))
                 ->groupBy('week_num')
                 ->orderBy('week_num', 'asc')
                 ->pluck('total', 'week_num')
@@ -202,7 +204,7 @@ class ReportController extends Controller
             }
 
             $rawResults = (clone $query)
-                ->select(DB::raw("{$monthExpr} as month_num"), DB::raw('COUNT(*) as total'))
+                ->select(DB::raw("{$monthExpr} as month_num"), DB::raw("{$countExpr} as total"))
                 ->groupBy('month_num')
                 ->orderBy('month_num', 'asc')
                 ->pluck('total', 'month_num')

@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Models\VisitorLog;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 
 class LogVisitor
 {
@@ -22,30 +21,33 @@ class LogVisitor
         $response = $next($request);
 
         try {
-            // 1. Only record visitors who are NOT logged in (Guests only)
-            if (Auth::check()) {
-                return $response;
-            }
-
-            // 2. Ignore static asset requests
+            // 1. Strictly ONLY record visits to the main home page ('/' or named route 'home')
             $path = trim($request->path(), '/');
-            if (preg_match('/\.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$/i', $path)) {
-                return $response;
-            }
-
-            // 3. Strictly ONLY record visits to the main home page ('/' or named route 'home')
             if ($path !== '' && !$request->routeIs('home')) {
                 return $response;
             }
 
-            // Log guest visitor on front page only
-            VisitorLog::create([
-                'ip_address' => $request->ip() ?? '127.0.0.1',
-                'user_agent' => substr($request->userAgent() ?? '', 0, 500),
-                'url'        => substr($request->fullUrl(), 0, 500),
-                'method'     => $request->method(),
-                'referer'    => substr($request->header('referer') ?? '', 0, 500),
-            ]);
+            // Ignore static asset requests
+            if (preg_match('/\.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$/i', $path)) {
+                return $response;
+            }
+
+            // 2. Only record UNIQUE IP address per day for the home page
+            $ip = $request->ip() ?? '127.0.0.1';
+
+            $alreadyLoggedToday = VisitorLog::where('ip_address', $ip)
+                ->whereDate('created_at', today())
+                ->exists();
+
+            if (!$alreadyLoggedToday) {
+                VisitorLog::create([
+                    'ip_address' => $ip,
+                    'user_agent' => substr($request->userAgent() ?? '', 0, 500),
+                    'url'        => substr($request->fullUrl(), 0, 500),
+                    'method'     => $request->method(),
+                    'referer'    => substr($request->header('referer') ?? '', 0, 500),
+                ]);
+            }
         } catch (\Throwable $e) {
             // Catch silently so middleware failure never breaks application requests
             Log::error('Visitor Log Middleware Error: ' . $e->getMessage());
@@ -54,4 +56,3 @@ class LogVisitor
         return $response;
     }
 }
-
