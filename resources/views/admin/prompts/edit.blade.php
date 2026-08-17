@@ -21,7 +21,17 @@
                     <div class="p-8 space-y-6">
                         <!-- Title -->
                         <div>
-                            <label for="title" class="block text-sm font-bold text-gray-300 mb-2">Tajuk Prompt</label>
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="title" class="block text-sm font-bold text-gray-300">Tajuk Prompt</label>
+                                <button type="button" 
+                                        onclick="copyTitleToDescription()" 
+                                        id="copyTitleBtn"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg text-xs font-bold transition cursor-pointer select-none"
+                                        title="Salin teks tajuk ini ke ruang Penerangan Ringkas">
+                                    <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    <span>Salin ke Penerangan 📋</span>
+                                </button>
+                            </div>
                             <input type="text" name="title" id="title" value="{{ old('title', $prompt->title) }}"
                                 class="block w-full rounded-xl bg-gray-900/50 border-gray-700 text-white px-4 py-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" required>
                             @error('title') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
@@ -610,4 +620,27 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function copyTitleToDescription() {
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const btn = document.getElementById('copyTitleBtn');
+
+            if (titleInput && descInput) {
+                descInput.value = titleInput.value;
+                if (btn) {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<span>✅ Disalin ke Penerangan!</span>';
+                    btn.classList.remove('bg-purple-500/10', 'text-purple-300', 'border-purple-500/30');
+                    btn.classList.add('bg-green-500/20', 'text-green-300', 'border-green-500/30');
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('bg-green-500/20', 'text-green-300', 'border-green-500/30');
+                        btn.classList.add('bg-purple-500/10', 'text-purple-300', 'border-purple-500/30');
+                    }, 2000);
+                }
+            }
+        }
+    </script>
 </x-app-layout>
