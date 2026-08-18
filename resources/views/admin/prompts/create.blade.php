@@ -307,10 +307,13 @@
                                 <div class="relative">
                                     <textarea name="prompt_text" 
                                               id="prompt_text" 
+                                              x-ref="promptInput"
+                                              x-init="$nextTick(() => { if ($refs.promptInput) { $refs.promptInput.focus(); } })"
                                               rows="6" 
                                               x-model="promptText" 
                                               placeholder="cyberpunk cityscape, neon lights, rainy streets..."
                                               class="block w-full rounded-xl bg-gray-950/70 border-gray-700 text-white placeholder-gray-500 px-4 py-3 text-sm font-mono focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition leading-relaxed" 
+                                              autofocus
                                               required></textarea>
                                 </div>
 
