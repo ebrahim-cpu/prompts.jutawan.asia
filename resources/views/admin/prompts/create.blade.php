@@ -211,12 +211,25 @@
                         </div>
                         @error('tags') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
 
-                        <!-- Collapsible Prompt Text Block with Trim & Copy Buttons -->
+                        <!-- Collapsible Prompt Text Block with Trim, Copy & Paste Buttons -->
                         <div x-data="{ 
-                            isCollapsed: true, 
+                            isCollapsed: false, 
                             promptText: {{ json_encode(old('prompt_text', '')) }},
                             isTrimmed: false,
                             copied: false,
+                            pasted: false,
+                            async pastePrompt() {
+                                try {
+                                    const text = await navigator.clipboard.readText();
+                                    if (text) {
+                                        this.promptText = text;
+                                        this.pasted = true;
+                                        setTimeout(() => this.pasted = false, 2500);
+                                    }
+                                } catch (err) {
+                                    console.error('Gagal membaca clipboard:', err);
+                                }
+                            },
                             trimPrompt() {
                                 if (!this.promptText) return;
                                 let cleaned = this.promptText
@@ -253,8 +266,20 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons (Copy & Trim) -->
+                                <!-- Action Buttons (Paste, Copy & Trim) -->
                                 <div class="flex items-center gap-2">
+                                    <button type="button" 
+                                            @click="pastePrompt()" 
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95 cursor-pointer border"
+                                            :class="pasted ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border-blue-500/30'"
+                                            title="Tampal teks dari clipboard">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path x-show="!pasted" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            <path x-show="pasted" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        <span x-text="pasted ? '✓ Ditampal!' : '📋 Tampal Prompt'"></span>
+                                    </button>
+
                                     <button type="button" 
                                             @click="copyPrompt()" 
                                             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm hover:scale-105 active:scale-95 cursor-pointer border"
@@ -289,6 +314,15 @@
                                               required></textarea>
                                 </div>
 
+                                <!-- Feedback Toast when Pasted -->
+                                <div x-show="pasted" x-cloak x-transition class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs flex items-center justify-between">
+                                    <span class="flex items-center gap-1.5 font-semibold">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        Teks prompt berjaya ditampal dari clipboard!
+                                    </span>
+                                    <span class="text-[10px] text-blue-200 font-mono">Kandungan clipboard ditampal</span>
+                                </div>
+
                                 <!-- Feedback Toast when Trimmed -->
                                 <div x-show="isTrimmed" x-cloak x-transition class="p-2.5 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-xs flex items-center justify-between">
                                     <span class="flex items-center gap-1.5 font-semibold">
@@ -309,7 +343,7 @@
 
                                 <p class="text-[11px] text-gray-500 flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5 text-purple-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    Klik <strong>"📋 Salin Prompt"</strong> untuk menyalin teks atau <strong>"✂️ Trim Prompt"</strong> untuk membuang spacing/enter berlebihan.
+                                    Klik <strong>"📋 Tampal Prompt"</strong> untuk menampal dari clipboard, <strong>"📋 Salin Prompt"</strong> untuk menyalin teks, atau <strong>"✂️ Trim Prompt"</strong> untuk membuang spacing/enter berlebihan.
                                 </p>
                             </div>
                         </div>
