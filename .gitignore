@@ -4,6 +4,7 @@
 .env.*
 .credentials.env
 *.secret
+*.zip
 _tools/
 .phpactor.json
 .phpunit.result.cache
