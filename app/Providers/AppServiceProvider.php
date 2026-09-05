@@ -9,10 +9,25 @@ use Illuminate\Auth\Events\Logout;
 use App\Models\UserAccessLog;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class AppServiceProvider
+ *
+ * Core service provider responsible for:
+ * 1. cPanel Shared Hosting Public Path Re-binding: Dynamically points Laravel's public_path
+ *    to `public_html/prompts.jutawan.asia` when running on the server.
+ * 2. Authentication Event Auditing: Attaches global event listeners to Laravel's native
+ *    Login and Logout events to persist detailed UserAccessLog security audit records.
+ *
+ * @package App\Providers
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
+     *
+     * Rebinds the public path container binding for shared cPanel hosting setups.
+     *
+     * @return void
      */
     public function register(): void
     {
@@ -26,7 +41,9 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap any application services and configure security audit listeners.
+     *
+     * @return void
      */
     public function boot(): void
     {

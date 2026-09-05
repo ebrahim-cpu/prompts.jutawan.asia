@@ -6,16 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Models\VisitorLog;
 use App\Models\UserAccessLog;
 use App\Models\Prompt;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * Class ReportController
+ *
+ * Provides interactive analytics, temporal aggregations (Daily, Weekly, Monthly),
+ * real-time AJAX chart feeds, and comprehensive reporting export in CSV and PDF formats.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class ReportController extends Controller
 {
     /**
-     * Display interactive reports view with initial data.
+     * Display interactive reports view with initial data for visitors, logins, and prompts.
+     *
+     * @param  Request  $request
+     * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $currentYear = (int) date('Y');
         $years = $this->getAvailableYears();
@@ -49,9 +63,12 @@ class ReportController extends Controller
     }
 
     /**
-     * Return JSON data for AJAX chart updates.
+     * Return JSON data for asynchronous frontend chart updates.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
      */
-    public function apiData(Request $request)
+    public function apiData(Request $request): JsonResponse
     {
         $type = $request->input('type', 'visitors'); // 'visitors', 'logins', 'prompts'
         $year = (int) $request->input('year', date('Y'));
@@ -69,14 +86,17 @@ class ReportController extends Controller
     }
 
     /**
-     * Export report data as Excel (CSV stream with UTF-8 BOM) or PDF print view.
+     * Export report dataset as an Excel-compatible CSV stream or print-optimized PDF view.
+     *
+     * @param  Request  $request
+     * @return StreamedResponse|View
      */
-    public function export(Request $request)
+    public function export(Request $request): StreamedResponse|View
     {
         $type = $request->input('type', 'visitors');
         $year = (int) $request->input('year', date('Y'));
         $period = strtolower($request->input('period', 'month'));
-        $format = strtolower($request->input('format', 'excel')); // 'excel', 'pdf'
+        $format = strtolower($request->input('format', 'excel'));
 
         $reportTitles = [
             'visitors' => 'Pelawat (Visitors)',
@@ -99,15 +119,15 @@ class ReportController extends Controller
             ));
         }
 
-        // CSV / Excel Export
+        // CSV / Excel Export with UTF-8 BOM
         return response()->stream(function () use ($reportTitle, $year, $period, $reportData) {
             $handle = fopen('php://output', 'w');
-            fputs($handle, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
+            fputs($handle, "\xEF\xBB\xBF");
 
             fputcsv($handle, ["LAPORAN INTERACTIVE - {$reportTitle}"]);
             fputcsv($handle, ["Tahun: {$year}", "Kekerapan: " . ucfirst($period)]);
             fputcsv($handle, ["Tarikh Dijana: " . date('Y-m-d H:i:s')]);
-            fputcsv($handle, []); // Empty row
+            fputcsv($handle, []);
 
             fputcsv($handle, ['Nisbah / Tempoh', 'Jumlah Rekod', 'Peratusan (%)']);
 
@@ -132,6 +152,12 @@ class ReportController extends Controller
 
     /**
      * Fetch aggregated labels & values for a report type, year, and period.
+     * Supports both MySQL and SQLite database drivers.
+     *
+     * @param  string  $type   'visitors', 'logins', or 'prompts'
+     * @param  int     $year   Target calendar year
+     * @param  string  $period 'daily', 'weeks', or 'month'
+     * @return array{labels: array, values: array, total: int, peakLabel: string, peakValue: int, avgValue: float}
      */
     private function getReportData(string $type, int $year, string $period): array
     {
@@ -149,7 +175,6 @@ class ReportController extends Controller
         $countExpr = ($type === 'visitors') ? 'COUNT(DISTINCT ip_address)' : 'COUNT(*)';
 
         if ($period === 'daily') {
-            // Group by date YYYY-MM-DD
             $driver = DB::getDriverName();
             if ($driver === 'sqlite') {
                 $dateFormat = "strftime('%Y-%m-%d', created_at)";
@@ -164,7 +189,6 @@ class ReportController extends Controller
                 ->pluck('total', 'date_label')
                 ->toArray();
 
-            // If no results for the year, return empty or default days
             if (empty($rawResults)) {
                 $labels = ['Tiada Rekod'];
                 $values = [0];
@@ -175,7 +199,6 @@ class ReportController extends Controller
                 }
             }
         } elseif ($period === 'weeks') {
-            // Group by week (Week 1 to Week 52)
             $driver = DB::getDriverName();
             if ($driver === 'sqlite') {
                 $weekExpr = "cast(strftime('%W', created_at) as integer) + 1";
@@ -195,7 +218,6 @@ class ReportController extends Controller
                 $values[] = isset($rawResults[$w]) ? (int) $rawResults[$w] : 0;
             }
         } else {
-            // Default: 'month' (Jan to Dec)
             $driver = DB::getDriverName();
             if ($driver === 'sqlite') {
                 $monthExpr = "cast(strftime('%m', created_at) as integer)";
@@ -234,12 +256,13 @@ class ReportController extends Controller
     }
 
     /**
-     * Get list of available years for selector.
+     * Compute the span of recorded years available across all logging tables.
+     *
+     * @return array<int, int>
      */
     private function getAvailableYears(): array
     {
         $currentYear = (int) date('Y');
-        
         $years = [$currentYear];
         
         try {
@@ -259,6 +282,6 @@ class ReportController extends Controller
         } catch (\Throwable $e) {}
 
         sort($years);
-        return array_reverse($years); // Latest year first
+        return array_reverse($years);
     }
 }

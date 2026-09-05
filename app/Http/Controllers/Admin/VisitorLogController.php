@@ -4,14 +4,27 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\VisitorLog;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
+/**
+ * Class VisitorLogController
+ *
+ * Administrative controller for inspecting anonymous traffic metrics,
+ * searching visitor IP logs, and purging historical analytics data.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class VisitorLogController extends Controller
 {
     /**
      * Display a listing of visitor logs with pagination options (50, 100, 200, 300).
+     *
+     * @param  Request  $request
+     * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $allowedPerPage = [50, 100, 200, 300];
         $perPage = (int) $request->input('per_page', 50);
@@ -22,7 +35,7 @@ class VisitorLogController extends Controller
 
         $query = VisitorLog::query()->latest();
 
-        // Optional Search by IP or URL
+        // Optional Search by IP, URL, or User Agent
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search) {
@@ -34,7 +47,7 @@ class VisitorLogController extends Controller
 
         $visitorLogs = $query->paginate($perPage)->withQueryString();
 
-        // Calculate Stats
+        // Compute traffic aggregations
         $totalVisits = VisitorLog::count();
         $uniqueVisitors = VisitorLog::distinct('ip_address')->count('ip_address');
         $todayVisits = VisitorLog::whereDate('created_at', today())->count();
@@ -54,9 +67,11 @@ class VisitorLogController extends Controller
     }
 
     /**
-     * Clear all visitor logs.
+     * Clear all visitor logs by truncating the table.
+     *
+     * @return RedirectResponse
      */
-    public function clear()
+    public function clear(): RedirectResponse
     {
         VisitorLog::truncate();
         return redirect()->route('admin.visitors.index')->with('success', 'Semua log pelawat telah berjaya dibersihkan!');

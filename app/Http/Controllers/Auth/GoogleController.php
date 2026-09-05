@@ -4,16 +4,28 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Exception;
+use Illuminate\View\View;
 
+/**
+ * Class GoogleController
+ *
+ * Coordinates Google OAuth 2.0 social authentication with fallback logic
+ * to fix LiteSpeed/cPanel query-string stripping and user upsert mapping.
+ *
+ * @package App\Http\Controllers\Auth
+ */
 class GoogleController extends Controller
 {
     /**
-     * Redirect user to Google OAuth page.
+     * Redirect the user to the Google OAuth consent screen.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function redirectToGoogle()
     {
@@ -23,9 +35,15 @@ class GoogleController extends Controller
     }
 
     /**
-     * Handle callback from Google OAuth.
+     * Handle the incoming OAuth callback returned from Google.
+     *
+     * Normalizes lost query strings under LiteSpeed rewrite environments,
+     * exchanges the auth code for user details, and logs the user in.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
-    public function handleGoogleCallback(Request $request)
+    public function handleGoogleCallback(Request $request): RedirectResponse
     {
         // Fix for cPanel/LiteSpeed dropping QUERY_STRING from GET requests
         if (isset($_SERVER['REQUEST_URI']) && str_contains($_SERVER['REQUEST_URI'], '?')) {
@@ -69,13 +87,13 @@ class GoogleController extends Controller
                 throw new Exception("Maklumat e-mel tidak ditemui daripada akaun Google.");
             }
 
-            // Find user by google_id or email
+            // Find existing user by google_id or email
             $user = User::where('google_id', $googleUser->getId())
                 ->orWhere('email', $googleUser->getEmail())
                 ->first();
 
             if ($user) {
-                // Update existing user with google_id & avatar (do NOT overwrite uploaded avatar)
+                // Link Google account and avatar (preserve custom uploaded avatar)
                 $user->google_id = $googleUser->getId();
                 if (empty($user->avatar)) {
                     $user->avatar = $googleUser->getAvatar();
@@ -85,7 +103,7 @@ class GoogleController extends Controller
                 }
                 $user->save();
             } else {
-                // Register new user via Google
+                // Register new user via Google authentication
                 $user = User::create([
                     'name' => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Google User',
                     'email' => $googleUser->getEmail(),
@@ -116,9 +134,11 @@ class GoogleController extends Controller
     }
 
     /**
-     * Temporary troubleshoot success page.
+     * Troubleshoot view displayed upon successful Google login.
+     *
+     * @return View|RedirectResponse
      */
-    public function debugSuccess()
+    public function debugSuccess(): View|RedirectResponse
     {
         if (!Auth::check()) {
             return redirect()->route('login')->withErrors(['email' => 'Sesi tidak ditemui. Sila log masuk semula.']);
@@ -127,9 +147,11 @@ class GoogleController extends Controller
     }
 
     /**
-     * Temporary troubleshoot fail page.
+     * Troubleshoot view displayed upon Google OAuth failure.
+     *
+     * @return View
      */
-    public function debugFail()
+    public function debugFail(): View
     {
         return view('auth.google_fail');
     }

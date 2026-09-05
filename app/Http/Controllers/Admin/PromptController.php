@@ -4,12 +4,31 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Prompt;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * Class PromptController
+ *
+ * Administrative controller providing complete CRUD operations,
+ * multi-image media management, dynamic filtering, instantaneous status toggling,
+ * and high-fidelity CSV and PDF catalog exports.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class PromptController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of prompts with configurable pagination and search/filtering.
+     *
+     * @param  Request  $request
+     * @return View
+     */
+    public function index(Request $request): View
     {
         $allowedPerPage = [50, 100, 150, 200, 300];
         $perPage = (int) $request->input('per_page', 50);
@@ -56,16 +75,16 @@ class PromptController extends Controller
 
         $prompts = $query->paginate($perPage)->withQueryString();
 
-        // Stats
+        // Catalog statistics
         $totalPrompts = Prompt::count();
         $freePrompts = Prompt::where('is_upcoming', false)->where('is_premium', false)->count();
         $premiumPrompts = Prompt::where('is_upcoming', false)->where('is_premium', true)->count();
         $upcomingPrompts = Prompt::where('is_upcoming', true)->count();
 
-        // Categories list for filter
+        // Database categories list for filter dropdown
         $dbCategories = \App\Models\Category::all();
 
-        // All tags list for filter (sorted alphabetically ascending A-Z)
+        // All tags sorted alphabetically A-Z
         $allTags = Prompt::allTags();
         ksort($allTags, SORT_NATURAL | SORT_FLAG_CASE);
 
@@ -83,7 +102,13 @@ class PromptController extends Controller
         ));
     }
 
-    public function export(Request $request)
+    /**
+     * Export the prompt repository to Excel-compatible CSV stream or PDF print view.
+     *
+     * @param  Request  $request
+     * @return StreamedResponse|View
+     */
+    public function export(Request $request): StreamedResponse|View
     {
         $scope = $request->input('scope', 'all'); // 'all' or 'filtered'
         $format = strtolower($request->input('format', 'excel')); // 'excel', 'pdf'
@@ -130,10 +155,10 @@ class PromptController extends Controller
             return view('admin.prompts.export_pdf', compact('prompts', 'scope', 'filename'));
         }
 
-        // CSV / Excel Export
+        // UTF-8 CSV Stream for Excel
         return response()->stream(function() use ($prompts) {
             $handle = fopen('php://output', 'w');
-            fputs($handle, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
+            fputs($handle, "\xEF\xBB\xBF"); // UTF-8 Byte Order Mark for Excel
 
             fputcsv($handle, [
                 'ID',
@@ -173,12 +198,23 @@ class PromptController extends Controller
         ]);
     }
 
-    public function create()
+    /**
+     * Show the prompt creation form.
+     *
+     * @return View
+     */
+    public function create(): View
     {
         return view('admin.prompts.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created prompt and process multiple uploaded image files.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
+     */
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -228,17 +264,36 @@ class PromptController extends Controller
         return redirect()->route('admin.prompts.index')->with('success', 'Prompt berjaya ditambah!');
     }
 
-    public function show(Prompt $prompt)
+    /**
+     * Display a specific prompt in the admin dashboard.
+     *
+     * @param  Prompt  $prompt
+     * @return View
+     */
+    public function show(Prompt $prompt): View
     {
         return view('admin.prompts.show', compact('prompt'));
     }
 
-    public function edit(Prompt $prompt)
+    /**
+     * Show the edit form for modifying an existing prompt.
+     *
+     * @param  Prompt  $prompt
+     * @return View
+     */
+    public function edit(Prompt $prompt): View
     {
         return view('admin.prompts.edit', compact('prompt'));
     }
 
-    public function update(Request $request, Prompt $prompt)
+    /**
+     * Update an existing prompt, handle removed media files, and store new images.
+     *
+     * @param  Request  $request
+     * @param  Prompt   $prompt
+     * @return RedirectResponse
+     */
+    public function update(Request $request, Prompt $prompt): RedirectResponse
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -272,22 +327,22 @@ class PromptController extends Controller
 
         $currentImages = $prompt->images ?? [];
 
-        // Handle deletions
+        // Handle deletions of specific previously uploaded images
         if ($request->has('removed_images')) {
             foreach ($request->removed_images as $toRemove) {
                 if (($key = array_search($toRemove, $currentImages)) !== false) {
                     unset($currentImages[$key]);
-                    // Delete physically
+                    // Delete physically from disk
                     $physicalPath = public_path(ltrim($toRemove, '/'));
                     if (File::exists($physicalPath)) {
                         File::delete($physicalPath);
                     }
                 }
             }
-            $currentImages = array_values($currentImages); // reindex
+            $currentImages = array_values($currentImages);
         }
 
-        // Handle new uploads
+        // Handle newly uploaded images
         if ($request->hasFile('images')) {
             $uploadPath = public_path('uploads/prompts');
             if (!File::exists($uploadPath)) {
@@ -307,7 +362,13 @@ class PromptController extends Controller
         return redirect()->route('admin.prompts.index')->with('success', 'Prompt berjaya dikemaskini!');
     }
 
-    public function destroy(Prompt $prompt)
+    /**
+     * Delete a prompt from the database and remove all its uploaded images from disk.
+     *
+     * @param  Prompt  $prompt
+     * @return RedirectResponse
+     */
+    public function destroy(Prompt $prompt): RedirectResponse
     {
         if (!empty($prompt->images)) {
             foreach ($prompt->images as $img) {
@@ -322,7 +383,14 @@ class PromptController extends Controller
         return redirect()->route('admin.prompts.index')->with('success', 'Prompt berjaya dipadam!');
     }
 
-    public function toggleStatus(Request $request, Prompt $prompt)
+    /**
+     * Instantly toggle is_premium, is_featured, or is_upcoming flags via AJAX.
+     *
+     * @param  Request  $request
+     * @param  Prompt   $prompt
+     * @return JsonResponse|RedirectResponse
+     */
+    public function toggleStatus(Request $request, Prompt $prompt): JsonResponse|RedirectResponse
     {
         if ($request->has('is_premium')) {
             $prompt->is_premium = (bool)$request->input('is_premium');

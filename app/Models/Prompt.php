@@ -3,9 +3,36 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * Class Prompt
+ *
+ * Represents an individual AI prompt catalog entry with image previews,
+ * categorization, ratings, tags, and tier access restrictions.
+ *
+ * @package App\Models
+ * @property int $id
+ * @property string $title
+ * @property string|null $description
+ * @property string $prompt_text The AI prompt copyable by users
+ * @property array|null $images JSON array of image URLs / file paths
+ * @property bool $is_premium Restricts full prompt text to Premium members
+ * @property bool $is_featured Highlights the prompt on the homepage
+ * @property bool $is_upcoming Flags the prompt as an upcoming release preview
+ * @property string|null $category Category slug (e.g. 'portrait', 'landscape')
+ * @property int $rating Rating from 1 to 5
+ * @property string|null $tags Comma-separated tag list
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 class Prompt extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'title',
         'description',
@@ -19,6 +46,11 @@ class Prompt extends Model
         'tags',
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'is_premium' => 'boolean',
         'is_featured' => 'boolean',
@@ -27,6 +59,13 @@ class Prompt extends Model
         'images' => 'array',
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * Automatically ensures backward-compatible schema columns exist on shared hosts.
+     *
+     * @return void
+     */
     protected static function boot()
     {
         parent::boot();
@@ -34,7 +73,12 @@ class Prompt extends Model
         self::ensureIsUpcomingColumnExists();
     }
 
-    public static function ensureIsFeaturedColumnExists()
+    /**
+     * Ensure the is_featured column exists in the database table.
+     *
+     * @return void
+     */
+    public static function ensureIsFeaturedColumnExists(): void
     {
         try {
             if (!\Illuminate\Support\Facades\Schema::hasColumn('prompts', 'is_featured')) {
@@ -45,7 +89,12 @@ class Prompt extends Model
         } catch (\Throwable $e) {}
     }
 
-    public static function ensureIsUpcomingColumnExists()
+    /**
+     * Ensure the is_upcoming column exists in the database table.
+     *
+     * @return void
+     */
+    public static function ensureIsUpcomingColumnExists(): void
     {
         try {
             if (!\Illuminate\Support\Facades\Schema::hasColumn('prompts', 'is_upcoming')) {
@@ -57,7 +106,9 @@ class Prompt extends Model
     }
 
     /**
-     * Get the first image url to display as a cover.
+     * Get the primary preview / cover image URL for this prompt.
+     *
+     * @return string|null Image URL or null if no images uploaded.
      */
     public function getFirstImageUrl(): ?string
     {
@@ -68,7 +119,9 @@ class Prompt extends Model
     }
 
     /**
-     * Available categories for prompts (fetched dynamically from database).
+     * Retrieve the list of available categories from database or static fallback.
+     *
+     * @return array<string, array{label: string, icon: string, color: string}>
      */
     public static function categories(): array
     {
@@ -86,7 +139,7 @@ class Prompt extends Model
                 return $cats;
             }
         } catch (\Throwable $e) {
-            // Fallback if table not ready
+            // Fallback to static definitions if table is empty or unmigrated
         }
 
         $fallback = [
@@ -112,7 +165,9 @@ class Prompt extends Model
     }
 
     /**
-     * Get the category details.
+     * Get UI display metadata (label, icon emoji, color) for this prompt's category.
+     *
+     * @return array{label: string, icon: string, color: string}
      */
     public function getCategoryInfo(): array
     {
@@ -121,7 +176,9 @@ class Prompt extends Model
     }
 
     /**
-     * Get tags as array.
+     * Get tags formatted as a cleaned array (without '#' prefix).
+     *
+     * @return array<int, string>
      */
     public function getTagsArray(): array
     {
@@ -133,12 +190,15 @@ class Prompt extends Model
     }
 
     /**
-     * Get all unique tags across prompts and Tag table.
+     * Get all unique tags across all prompts merged with database tags,
+     * including their prompt usage count.
+     *
+     * @return array<string, int> Associative array of [tagName => count]
      */
     public static function allTags(): array
     {
         $tags = [];
-        // From db tags table
+        // From database tags table
         try {
             foreach (\App\Models\Tag::all() as $t) {
                 $cleanName = ltrim(trim($t->name), '#');
@@ -148,7 +208,7 @@ class Prompt extends Model
             }
         } catch (\Throwable $e) {}
 
-        // From prompts table usage
+        // From prompts table usage counts
         foreach (self::whereNotNull('tags')->where('tags', '!=', '')->pluck('tags') as $tagString) {
             foreach (explode(',', $tagString) as $tag) {
                 $cleanTag = ltrim(trim($tag), '#');

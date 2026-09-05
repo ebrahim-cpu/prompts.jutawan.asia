@@ -4,15 +4,27 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
+/**
+ * Class CategoryController
+ *
+ * Provides administrative management of prompt categories, unique slug generation,
+ * and badge icon / color assignment.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of categories.
+     * Display a listing of categories with prompt counts.
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $categories = Category::latest()->paginate(15);
         $totalCategories = Category::count();
@@ -20,9 +32,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created category.
+     * Store a newly created category with auto-generated unique slug.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
@@ -48,9 +63,13 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified category.
+     * Update the specified category attributes.
+     *
+     * @param  Request   $request
+     * @param  Category  $category
+     * @return RedirectResponse
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category): RedirectResponse
     {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
@@ -68,9 +87,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified category.
+     * Remove the specified category from storage.
+     *
+     * @param  Category  $category
+     * @return RedirectResponse
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category): RedirectResponse
     {
         $category->delete();
         return redirect()->route('admin.categories.index')->with('success', 'Kategori berjaya dipadam!');
