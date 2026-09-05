@@ -1,4 +1,6 @@
 *.log
+error_log
+*error_log*
 .DS_Store
 .env
 .env.*
@@ -6,6 +8,11 @@
 *.secret
 *.zip
 _tools/
+run_add_event_type_column.php
+run_categories_tags_migration.php
+run_db_update.php
+run_user_access_logs_migration.php
+run_visitor_db.php
 .phpactor.json
 .phpunit.result.cache
 /.fleet
