@@ -141,6 +141,24 @@
 
         <!-- Navigation -->
         <nav class="glass-card fixed w-full z-[110] transition-all duration-300" x-data="{ mobileOpen: false }">
+            <!-- Sticky Impersonation Warning Banner -->
+            @if(session()->has('impersonator_id'))
+                <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-slate-900 px-4 py-2 shadow-xl border-b border-amber-600/40">
+                    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-2 font-bold text-xs sm:text-sm">
+                            <span class="text-lg sm:text-xl">🎭</span>
+                            <span>Mod Menyamar (Impersonating): Anda sedang melayari sistem sebagai <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }}) [Tier: <span class="uppercase font-extrabold tracking-wider bg-black/10 px-1.5 py-0.5 rounded">{{ auth()->user()->tier }}</span>]</span>
+                        </div>
+                        <form method="POST" action="{{ route('impersonate.leave') }}" class="shrink-0">
+                            @csrf
+                            <button type="submit" class="text-xs font-extrabold bg-slate-900 text-white px-3.5 py-1.5 rounded-lg hover:bg-black hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 cursor-pointer">
+                                <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                <span>Kembali ke Akaun Admin</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 group">
@@ -322,7 +340,7 @@
         @endauth
 
         <!-- Hero Section -->
-        <div class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div class="{{ session()->has('impersonator_id') ? 'pt-36 sm:pt-32' : 'pt-24' }} pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
             <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 animate-fade-in-up">
                 Koleksi <span class="text-gradient">Prompt AI</span><br />Yang Terbaik
             </h1>

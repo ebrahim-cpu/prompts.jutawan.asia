@@ -53,6 +53,9 @@ Route::middleware('auth')->group(function () {
     // Stripe Checkout Initiation & Callback
     Route::post('/pricing/checkout', [PricingController::class, 'checkout'])->name('pricing.checkout');
     Route::get('/pricing/success', [PricingController::class, 'success'])->name('pricing.success');
+
+    // Exit Impersonation Mode
+    Route::post('/impersonate/leave', [UserController::class, 'leaveImpersonation'])->name('impersonate.leave');
 });
 
 /*
@@ -72,7 +75,8 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     Route::resource('categories', CategoryController::class)->except(['create', 'show', 'edit']);
     Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);
 
-    // User Administration
+    // User Administration & Impersonation
+    Route::post('users/{user}/impersonate', [UserController::class, 'impersonate'])->name('users.impersonate');
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('users', [UserController::class, 'store'])->name('users.store');

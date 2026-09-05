@@ -176,6 +176,16 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-1">
+                                            @if($user->id !== auth()->id())
+                                                <form method="POST" action="{{ route('admin.users.impersonate', $user) }}" onsubmit="return confirm('Adakah anda pasti mahu log masuk & menyamar sebagai pengguna {{ addslashes($user->name) }} (Tier: {{ strtoupper($user->tier) }})?')">
+                                                    @csrf
+                                                    <button type="submit" class="p-2 rounded-lg text-amber-400 hover:bg-amber-500/10 transition" title="Menyamar (Log Masuk Sebagai Pengguna Ini)">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
                                             <a href="{{ route('admin.users.edit', $user) }}" class="p-2 rounded-lg text-indigo-400 hover:bg-indigo-500/10 transition" title="Edit">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                             </a>

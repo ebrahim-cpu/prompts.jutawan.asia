@@ -25,6 +25,25 @@
     </head>
     <body class="antialiased bg-[#0f172a]" style="min-height: 100vh;">
         <div class="min-h-screen">
+            <!-- Sticky Impersonation Warning Banner -->
+            @if(session()->has('impersonator_id'))
+                <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-slate-900 px-4 py-2.5 shadow-xl border-b border-amber-600/40 sticky top-0 z-[120]">
+                    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 font-bold text-xs sm:text-sm">
+                            <span class="text-xl">🎭</span>
+                            <span>Mod Menyamar (Impersonating): Anda sedang melayari sistem sebagai <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }}) [Tier: <span class="uppercase font-extrabold tracking-wider bg-black/10 px-1.5 py-0.5 rounded">{{ auth()->user()->tier }}</span>]</span>
+                        </div>
+                        <form method="POST" action="{{ route('impersonate.leave') }}" class="shrink-0">
+                            @csrf
+                            <button type="submit" class="text-xs font-extrabold bg-slate-900 text-white px-3.5 py-1.5 rounded-lg hover:bg-black hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 cursor-pointer">
+                                <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                <span>Kembali ke Akaun Admin</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
             @include('layouts.navigation')
 
             <!-- Global Expiry Warning -->
