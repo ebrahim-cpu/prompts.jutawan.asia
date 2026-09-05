@@ -1,0 +1,110 @@
+[15-Apr-2026 09:08:04 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/../../promtinglibabry/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/index.php on line 14
+[15-Apr-2026 09:08:04 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/../../promtinglibabry/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/index.php on line 14
+[15-Apr-2026 09:08:04 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/../../promtinglibabry/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/index.php on line 14
+[15-Apr-2026 09:16:41 Asia/Kuala_Lumpur] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.30. in /home/jutawnas/promtinglibabry/vendor/composer/platform_check.php on line 22
+[15-Apr-2026 09:18:02 Asia/Kuala_Lumpur] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.30. in /home/jutawnas/promtinglibabry/vendor/composer/platform_check.php on line 22
+[15-Apr-2026 01:19:35 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function Symfony\Component\ErrorHandler\ErrorRenderer\highlight_file() in /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php:257
+Stack trace:
+#0 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/trace.html.php(36): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->fileExcerpt()
+#1 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#2 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/traces.html.php(48): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include()
+#3 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#4 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/exception.html.php(54): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include()
+#5 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#6 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/exception_full.html.php(35): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include()
+#7 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#8 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(140): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include()
+#9 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(72): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->renderException()
+#10 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(914): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->render()
+#11 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(888): Illuminate\Foundation\Exceptions\Handler->renderExceptionWithSymfony()
+#12 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(863): Illuminate\Foundation\Exceptions\Handler->renderExceptionContent()
+#13 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(842): Illuminate\Foundation\Exceptions\Handler->convertExceptionToResponse()
+#14 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(741): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#15 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(628): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#16 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(221): Illuminate\Foundation\Exceptions\Handler->render()
+#17 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#18 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#19 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():257}()
+#20 {main}
+  thrown in /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php on line 257
+[14-Jul-2026 16:42:34 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Call to undefined function Symfony\Component\ErrorHandler\ErrorRenderer\highlight_file() in /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php:257
+Stack trace:
+#0 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/trace.html.php(36): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->fileExcerpt('/home/jutawnas/...', 257, 5)
+#1 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#2 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/traces.html.php(48): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include('views/trace.htm...', Array)
+#3 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#4 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/exception.html.php(54): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include('views/traces.ht...', Array)
+#5 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#6 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/Resources/views/exception_full.html.php(35): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include('views/exception...', Array)
+#7 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(337): include('/home/jutawnas/...')
+#8 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(140): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->include('views/exception...', Array)
+#9 /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(72): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->renderException(Object(Symfony\Component\ErrorHandler\Exception\FlattenException))
+#10 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(914): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->render(Object(Symfony\Component\ErrorHandler\Exception\FlattenException))
+#11 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(888): Illuminate\Foundation\Exceptions\Handler->renderExceptionWithSymfony(Object(Error), true)
+#12 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(863): Illuminate\Foundation\Exceptions\Handler->renderExceptionContent(Object(Error))
+#13 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(842): Illuminate\Foundation\Exceptions\Handler->convertExceptionToResponse(Object(Error))
+#14 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(741): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Error))
+#15 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(628): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Error))
+#16 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(221): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Error))
+#17 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Error))
+#18 /home/jutawnas/promtinglibabry/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Error))
+#19 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():257}(Object(Error))
+#20 {main}
+  thrown in /home/jutawnas/promtinglibabry/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php on line 257
+[24-Aug-2026 22:38:18 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:18 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:18 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:19 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:19 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:19 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:19 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:19 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[24-Aug-2026 22:38:19 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:38:49 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:53 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:53 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:53 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:54 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:54 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:54 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:54 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:54 Asia/Kuala_Lumpur] PHP Warning:  require(/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php): Failed to open stream: No such file or directory in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
+[25-Aug-2026 16:39:54 Asia/Kuala_Lumpur] PHP Fatal error:  Uncaught Error: Failed opening required '/home/jutawnas/public_html/prompts.jutawan.asia/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/jutawnas/public_html/prompts.jutawan.asia/run_clear_view_cache.php on line 4
