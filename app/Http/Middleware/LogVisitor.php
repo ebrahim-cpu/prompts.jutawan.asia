@@ -7,13 +7,26 @@ use Illuminate\Http\Request;
 use App\Models\VisitorLog;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class LogVisitor
+ *
+ * Lightweight, non-intrusive traffic analytics middleware.
+ *
+ * Deduplication Policy:
+ * 1. Only records visits directed at the main homepage ('/' or route 'home').
+ * 2. Skips all static media/asset requests (.css, .js, .png, etc.).
+ * 3. Records at most ONE entry per unique IP address per calendar day.
+ * 4. Fails silently in a try/catch block so logging exceptions never disrupt client responses.
+ *
+ * @package App\Http\Middleware
+ */
 class LogVisitor
 {
     /**
-     * Handle an incoming request.
+     * Handle an incoming request and log daily unique visitor hits.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)

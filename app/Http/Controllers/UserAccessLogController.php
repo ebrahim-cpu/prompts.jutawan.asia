@@ -3,14 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserAccessLog;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
+/**
+ * Class UserAccessLogController
+ *
+ * Manages security audit trails of user authentication sessions.
+ *
+ * Scoping Rules:
+ * - Regular users can view and clear only their own access logs.
+ * - Administrators can inspect all historical user sessions across the entire system.
+ *
+ * @package App\Http\Controllers
+ */
 class UserAccessLogController extends Controller
 {
     /**
-     * Display a listing of user login/logout access logs.
+     * Display a paginated audit log of login and logout events.
+     *
+     * @param  Request  $request
+     * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $allowedPerPage = [50, 100, 200, 300];
         $perPage = (int) $request->input('per_page', 50);
@@ -34,7 +50,7 @@ class UserAccessLogController extends Controller
             $query->where('event_type', strtoupper($request->input('event_type')));
         }
 
-        // Optional Search
+        // Search by IP, user agent, or user identity
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search, $isAdmin) {
@@ -50,7 +66,7 @@ class UserAccessLogController extends Controller
 
         $accessLogs = $query->paginate($perPage)->withQueryString();
 
-        // Calculate Stats
+        // Calculate aggregated session statistics
         $baseQuery = $isAdmin ? UserAccessLog::query() : UserAccessLog::where('user_id', $user->id);
 
         $totalLogins = (clone $baseQuery)->where('event_type', 'LOGIN')->count();
@@ -71,9 +87,13 @@ class UserAccessLogController extends Controller
     }
 
     /**
-     * Clear user access logs (Admin only clears all; User clears their own).
+     * Purge access logs according to caller's authorization level.
+     *
+     * Administrators truncate the entire table; regular users delete only their own rows.
+     *
+     * @return RedirectResponse
      */
-    public function clear()
+    public function clear(): RedirectResponse
     {
         $user = auth()->user();
         if ($user->role === 'admin') {

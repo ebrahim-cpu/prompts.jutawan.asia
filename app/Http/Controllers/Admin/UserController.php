@@ -4,14 +4,28 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
+/**
+ * Class UserController
+ *
+ * Administrative controller for user account management, role allocation (admin/user),
+ * manual tier overrides (free/premium), and subscription date adjustments.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class UserController extends Controller
 {
     /**
-     * Display all users with search.
+     * Display all registered users with keyword search and role/tier filters.
+     *
+     * @param  Request  $request
+     * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = User::query();
 
@@ -42,17 +56,22 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new user.
+     * Show the user creation form.
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.users.create');
     }
 
     /**
-     * Store a newly created user in storage.
+     * Store a newly created user account with designated role and tier.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -67,7 +86,7 @@ class UserController extends Controller
         $user = new User();
         $user->name = $validated['name'];
         $user->email = $validated['email'];
-        $user->password = \Illuminate\Support\Facades\Hash::make($validated['password']);
+        $user->password = Hash::make($validated['password']);
         $user->role = $validated['role'];
         $user->tier = $validated['tier'];
 
@@ -83,16 +102,25 @@ class UserController extends Controller
 
     /**
      * Show user edit form.
+     *
+     * @param  User  $user
+     * @return View
      */
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         return view('admin.users.edit', compact('user'));
     }
 
     /**
-     * Update user role/tier.
+     * Update user credentials, role, tier, and subscription bounds.
+     *
+     * Protects the active logged-in administrator from self-demotion.
+     *
+     * @param  Request  $request
+     * @param  User     $user
+     * @return RedirectResponse
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -115,19 +143,21 @@ class UserController extends Controller
             $user->subscription_starts_at = null;
             $user->premium_expires_at = null;
             $user->save();
-        } else if ($request->tier === 'premium') {
-            // Keep the dates if passed, else use defaults
         }
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna "' . $user->name . '" berjaya dikemaskini!');
     }
 
     /**
-     * Delete a user.
+     * Delete a user account from database.
+     *
+     * Prevents the active administrator from accidentally deleting their own account.
+     *
+     * @param  User  $user
+     * @return RedirectResponse
      */
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
-        // Prevent admin from deleting themselves
         if ($user->id === auth()->id()) {
             return redirect()->back()->with('error', 'Anda tidak boleh memadam akaun anda sendiri!');
         }

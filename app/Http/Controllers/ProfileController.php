@@ -9,10 +9,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+/**
+ * Class ProfileController
+ *
+ * Manages user profile settings, avatar image uploads into user-isolated directories,
+ * and account closure/deletion.
+ *
+ * @package App\Http\Controllers
+ */
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Display the user's account profile management form.
+     *
+     * @param  Request  $request
+     * @return View
      */
     public function edit(Request $request): View
     {
@@ -22,7 +33,12 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information and profile picture.
+     * Update the user's personal details and avatar image file.
+     *
+     * If an avatar file is submitted, it is organized into `/uploads/users/{id}/`.
+     *
+     * @param  ProfileUpdateRequest  $request
+     * @return RedirectResponse
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
@@ -33,7 +49,7 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
-        // Handle profile picture upload into folder named after user ID
+        // Handle profile picture upload into user-scoped directory
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             $uploadDir = public_path('uploads/users/' . $user->id);
@@ -54,7 +70,10 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Terminate and purge the user's account after verifying current password.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {

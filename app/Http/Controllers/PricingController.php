@@ -3,13 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\View\View;
 
+/**
+ * Class PricingController
+ *
+ * Coordinates premium subscription tiers, pricing plans, Stripe Checkout
+ * session initialization, and subscription activation callbacks.
+ *
+ * @package App\Http\Controllers
+ */
 class PricingController extends Controller
 {
     /**
-     * Plans list with pricing and duration.
+     * Define the catalog of subscription tiers, pricing in MYR, and duration periods.
+     *
+     * @return array<string, array{name: string, price: float, price_display: string, duration_days: int|null, description: string, icon: string, popular: bool}>
      */
     public static function plans(): array
     {
@@ -54,7 +66,7 @@ class PricingController extends Controller
                 'name' => 'Seumur Hidup',
                 'price' => 499.00,
                 'price_display' => 'RM 499',
-                'duration_days' => null, // null = lifetime
+                'duration_days' => null, // null denotes permanent lifetime access
                 'description' => 'Bayar sekali, akses selama-lamanya',
                 'icon' => '👑',
                 'popular' => false,
@@ -63,35 +75,39 @@ class PricingController extends Controller
     }
 
     /**
-     * Show the pricing page.
+     * Render the pricing plans landing page.
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $plans = self::plans();
         return view('pricing', compact('plans'));
     }
 
     /**
-     * Handle payment initiation via Stripe Checkout.
+     * Initiate a Stripe Checkout hosted session for the selected plan.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
-    public function checkout(Request $request)
+    public function checkout(Request $request): RedirectResponse
     {
         $request->validate(['plan' => 'required|in:1day,1week,1month,1year,lifetime']);
 
         $plans = self::plans();
         $plan = $plans[$request->plan];
 
-        // Check if Stripe is configured
+        // Ensure Stripe Secret Key is present and configured
         $stripeSecret = config('services.stripe.secret');
 
         if (!$stripeSecret || str_contains($stripeSecret, 'YOUR_STRIPE')) {
-            // Stripe not configured yet — show friendly error
             return redirect()->route('pricing.index')->with('error', 
                 'Payment gateway belum dikonfigurasi. Sila tetapkan STRIPE_KEY dan STRIPE_SECRET di fail .env terlebih dahulu. Dapatkan credentials di https://dashboard.stripe.com/apikeys'
             );
         }
 
-        // Create Stripe Checkout Session
+        // Initialize Stripe SDK client
         \Stripe\Stripe::setApiKey($stripeSecret);
 
         try {
@@ -104,7 +120,7 @@ class PricingController extends Controller
                             'name' => 'PromptLib Premium — ' . $plan['name'],
                             'description' => $plan['description'],
                         ],
-                        'unit_amount' => (int)($plan['price'] * 100), // Stripe uses cents
+                        'unit_amount' => (int)($plan['price'] * 100), // In sen / cents
                     ],
                     'quantity' => 1,
                 ]],
@@ -128,9 +144,14 @@ class PricingController extends Controller
     }
 
     /**
-     * Handle successful payment callback.
+     * Process Stripe callback upon customer return after checkout.
+     *
+     * Validates payment status and upgrades the user's membership tier.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
-    public function success(Request $request)
+    public function success(Request $request): RedirectResponse
     {
         $plan = $request->query('plan');
         $sessionId = $request->query('session_id');
@@ -153,14 +174,14 @@ class PricingController extends Controller
                 return redirect()->route('pricing.index')->with('error', 'Pembayaran tidak berjaya. Sila cuba semula.');
             }
 
-            // Verify the user matches
+            // Verify the matching user record
             $user = User::find($session->metadata->user_id ?? $session->client_reference_id);
 
             if (!$user) {
                 return redirect()->route('pricing.index')->with('error', 'Pengguna tidak ditemui.');
             }
 
-            // Activate premium
+            // Activate premium privileges
             $this->activatePremium($user, $session->metadata->plan ?? $plan);
 
             return redirect()->route('dashboard')->with('success', 'Tahniah! Pembayaran berjaya dan akaun anda telah dinaik taraf ke Premium! 🎉');
@@ -171,9 +192,16 @@ class PricingController extends Controller
     }
 
     /**
-     * Activate premium for a user based on the selected plan.
+     * Upgrade user tier and calculate new expiration timestamp.
+     *
+     * If the user already has an active future expiration date,
+     * the new duration is extended cumulatively on top of it.
+     *
+     * @param  User  $user
+     * @param  string  $planKey
+     * @return void
      */
-    private function activatePremium(User $user, string $planKey)
+    private function activatePremium(User $user, string $planKey): void
     {
         $plans = self::plans();
         $plan = $plans[$planKey] ?? null;
@@ -183,10 +211,10 @@ class PricingController extends Controller
         $user->tier = 'premium';
 
         if ($plan['duration_days'] === null) {
-            // Lifetime
+            // Lifetime permanent access
             $user->premium_expires_at = null;
         } else {
-            // Extend from current expiry if still active, otherwise from now
+            // Extend existing active subscription or start fresh from now
             $startFrom = ($user->premium_expires_at && $user->premium_expires_at->isFuture())
                 ? $user->premium_expires_at
                 : now();

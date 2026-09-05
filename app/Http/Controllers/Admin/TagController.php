@@ -4,15 +4,26 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
+/**
+ * Class TagController
+ *
+ * Administrative controller for managing taxonomy tags used across prompt records.
+ *
+ * @package App\Http\Controllers\Admin
+ */
 class TagController extends Controller
 {
     /**
-     * Display a listing of tags.
+     * Display a listing of tags sorted alphabetically with prompt usage counts.
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $tags = Tag::orderBy('name', 'asc')->paginate(50);
         $totalTags = Tag::count();
@@ -20,9 +31,12 @@ class TagController extends Controller
     }
 
     /**
-     * Store a newly created tag.
+     * Store a newly created tag, stripping any leading '#' symbols.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -46,8 +60,12 @@ class TagController extends Controller
 
     /**
      * Update the specified tag.
+     *
+     * @param  Request  $request
+     * @param  Tag      $tag
+     * @return RedirectResponse
      */
-    public function update(Request $request, Tag $tag)
+    public function update(Request $request, Tag $tag): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -64,9 +82,12 @@ class TagController extends Controller
     }
 
     /**
-     * Remove the specified tag.
+     * Remove the specified tag from database.
+     *
+     * @param  Tag  $tag
+     * @return RedirectResponse
      */
-    public function destroy(Tag $tag)
+    public function destroy(Tag $tag): RedirectResponse
     {
         $tag->delete();
         return redirect()->route('admin.tags.index')->with('success', 'Tag berjaya dipadam!');

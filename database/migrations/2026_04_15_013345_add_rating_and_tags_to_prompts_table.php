@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('prompts', function (Blueprint $table) {
             $table->unsignedTinyInteger('rating')->default(3)->after('category'); // 1-5 stars
-            $table->string('tags')->nullable()->after('rating'); // comma-separated tags
+            $table->string('tags')->nullable()->after('rating'); // comma-separated hashtags
         });
     }
 

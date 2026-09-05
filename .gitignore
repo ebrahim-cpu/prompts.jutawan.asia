@@ -1,13 +1,11 @@
 *.log
-error_log
 .DS_Store
 .env
-.env.backup
-.env.production
-ftp-config.json
+.env.*
+.credentials.env
+*.secret
 *.zip
-scratch/
-run_cleanup_visitor_logs.php
+_tools/
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -27,4 +25,3 @@ run_cleanup_visitor_logs.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-

@@ -4,13 +4,48 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * Class UserAccessLog
+ *
+ * Audit log recording authentication events (LOGIN / LOGOUT) with IP,
+ * device heuristics, User-Agent, and referer headers.
+ *
+ * @package App\Models
+ * @property int $id
+ * @property int|null $user_id
+ * @property string|null $user_name
+ * @property string|null $user_email
+ * @property string $event_type 'LOGIN' or 'LOGOUT'
+ * @property string $ip_address
+ * @property string|null $user_agent
+ * @property string|null $url
+ * @property string|null $method
+ * @property string|null $referer
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user Associated user relationship
+ * @property-read array{label: string, bg: string, icon: string} $event_badge UI badge styling
+ * @property-read string $browser_summary Human-readable browser and device string
+ */
 class UserAccessLog extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'user_access_logs';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'user_name',
@@ -24,15 +59,19 @@ class UserAccessLog extends Model
     ];
 
     /**
-     * Relationship to User model.
+     * Relationship to the user whose authentication triggered the event.
+     *
+     * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Get formatted event type badge label.
+     * Get visual badge styling attributes (label, background color, icon) for the event.
+     *
+     * @return array{label: string, bg: string, icon: string}
      */
     public function getEventBadgeAttribute(): array
     {
@@ -52,7 +91,9 @@ class UserAccessLog extends Model
     }
 
     /**
-     * Get a human-readable browser & OS summary from user_agent.
+     * Parse the raw HTTP User-Agent into a clean browser name and device classification.
+     *
+     * @return string E.g. "Chrome (Desktop)" or "Safari (Telefon Bimbit)"
      */
     public function getBrowserSummaryAttribute(): string
     {
